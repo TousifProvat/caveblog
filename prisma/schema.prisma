@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
 }
 
@@ -12,11 +12,68 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
+model User {
+  id        String     @id @default(uuid())
+  username  String     @unique
+  email     String     @unique
+  password  String
+  profile   Profile?
+  posts     Post[]
+  stars     Star[]
+  bookmarks Bookmark[]
+  comments  Comment[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
 
-model Note {
-  id Int @id @default(autoincrement())
-  title String
-  content String
+model Profile {
+  id       String @id @default(uuid())
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String @unique
+  headline String
+  bio      String
+  website  String
+  location String
+}
+
+model Post {
+  id        Int        @id @default(autoincrement())
+  author    User       @relation(fields: [authorId], references: [id])
+  authorId  String
+  title     String     @unique
+  body      String
+  slug      String     @unique
+  stars     Star[]
+  bookmarks Bookmark[]
+  comments  Comment[]
+
+  @@index([title])
+}
+
+model Star {
+  id     Int    @id @default(autoincrement())
+  post   Post   @relation(fields: [postId], references: [id])
+  postId Int
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  commentId Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

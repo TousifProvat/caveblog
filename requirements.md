@@ -53,11 +53,11 @@
   - delete post: api/v1/post/delete/:id DELETE @PRIVATE
   - update post: api/v1/post/update/:id PATCH @PRIVATE
 
-- like/start:
+- start:
 
-  - get post likes: api/v1/like/post/:id GET @PUBLIC
-  - create like: api/v1/like/create POST @PRIVATE
-  - delete like: api/v1/like/delete DELETE @PRIVATE
+  - get post likes: api/v1/stat/post/:id GET @PUBLIC
+  - create like: api/v1/star/create POST @PRIVATE
+  - delete like: api/v1/star/delete DELETE @PRIVATE
 
 - bookmark:
 
