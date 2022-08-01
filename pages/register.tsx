@@ -8,7 +8,7 @@ const register: NextPage = () => {
   }
 
   return (
-    <div className="h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="h-fit flex items-center justify-center pt-16 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 ">
         <form onSubmit={onSubmit}>
           <div className="rounded-md shadow-sm bg-white p-10">
