@@ -19,9 +19,9 @@
 
 ## MVP:
 
-1. User can register using google/github/email
-2. User can signin using google/github/email
-3. User will have a profile
+1. User can register using google/github/email ✅partial
+2. User can signin using google/github/email ✅partial
+3. User will have a profile ✅partial
 4. user can read/create/delete/update blogs
 5. Blogsfeed for users
 6. User can like/star blogs
@@ -42,13 +42,15 @@
 
   - signup/register: api/v1/user/register POST @PUBLIC
   - signin: api/v1/user/signin POST @PUBLIC
-  - get profile: api/v1/user/profile GET @PRIVATE
-  - update profile: api/v1/user/profile/update PATCH @PRIVATE
+  - get profile: api/v1/profile GET @PRIVATE
+  - get profile by id: api/v1/profile/[id] @PUBlIC
+  - create profile: api/v1/profile/create POST @PRIVATE
+  - update profile: api/v1/profile/update PATCH @PRIVATE
 
 - posts:
 
   - get all posts: api/v1/post GET @PUBLIC
-  - get post: api/v1/post/:id GET @PUBLIC
+  - get post by slug: api/v1/post/:slug GET @PUBLIC
   - create post: api/v1/post/create POST @PRIVATE
   - delete post: api/v1/post/delete/:id DELETE @PRIVATE
   - update post: api/v1/post/update/:id PATCH @PRIVATE
