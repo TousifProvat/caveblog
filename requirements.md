@@ -22,9 +22,9 @@
 1. User can register using google/github/email ✅partial
 2. User can signin using google/github/email ✅partial
 3. User will have a profile ✅partial
-4. user can read/create/delete/update blogs
-5. Blogsfeed for users
-6. User can like/star blogs
+4. user can read/create/delete/update blogs ✅p
+5. Blogsfeed for users ✅
+6. User can star blogs ✅
 7. User can bookmark blogs
 8. User can comment on posts
 
@@ -57,24 +57,24 @@
 
 - start:
 
-  - get post likes: api/v1/stat/post/:id GET @PUBLIC
+  - get post likes: api/v1/stat/post/[id] GET @PUBLIC
   - create like: api/v1/star/create POST @PRIVATE
-  - delete like: api/v1/star/delete DELETE @PRIVATE
+  - delete like: api/v1/star/delete/[id] DELETE @PRIVATE
 
 - bookmark:
 
   - get user bookmarks: api/v1/bookmark/user/:id GET @PRIVATE
   - get post bookmarks: api/v1/bookmark/post/:id GET @PUBLIC
   - create bookmark: api/v1/bookmark/create POST @PRIVATE
-  - delete bookmark: api/v1/bookmark/delete DELETE @PRIVATE
+  - delete bookmark: api/v1/bookmark/delete/[id] DELETE @PRIVATE
 
 - comment:
 
   - get user comments: api/v1/comment/user/:id GET @PRIVATE
   - get post comments: api/v1/comment/post/:id GET @PUBLIC
   - create comment: api/v1/comment/create POST @PRIVATE
-  - update comment: api/v1/comment/update PATCH @PRIVATE
-  - delete comment: api/v1/comment/delete DELETE @PRIVATE
+  - update comment: api/v1/comment/update/[id] PATCH @PRIVATE
+  - delete comment: api/v1/comment/delete/[id] DELETE @PRIVATE
 
 ## Data Models:
 

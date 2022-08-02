@@ -1,22 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../../lib/prisma';
 
-interface profileTypes {
-  id: string;
-  userId: string;
-  headline: string;
-  bio: string;
-  website: string;
-  location: string;
-}
-
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).end();
   try {
     const { id } = req.query;
-    const profile: profileTypes | null = await prisma.profile.findUnique({
+    const profile = await prisma.profile.findUnique({
       where: {
-        id,
+        id: String(id),
       },
       include: {
         user: {
