@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '../../../../lib/prisma';
+import { prisma } from '../../../lib/prisma';
 
 const slugGenerator = (name: string) => {
   let slug = name.trim().replaceAll(' ', '-').toLowerCase();

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '../../../../lib/prisma';
+import { prisma } from '../../../lib/prisma';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -21,7 +21,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         message: 'Invalid Request',
       });
 
-    const newBookmark = await prisma.bookmark.create({
+    const newStar = await prisma.star.create({
       data: {
         userId: user,
         postId: post,
@@ -29,7 +29,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     });
 
     return res.status(201).json({
-      bookmark: newBookmark,
+      star: newStar,
     });
   } catch (err) {
     console.log({ err });

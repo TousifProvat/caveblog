@@ -1,10 +1,31 @@
 import { NextPage } from 'next';
 import Link from 'next/link';
-import { SyntheticEvent } from 'react';
+import { signIn, getSession, useSession } from 'next-auth/react';
+import { ChangeEventHandler, SyntheticEvent, useState } from 'react';
+import { useRouter } from 'next/router';
 
 const login: NextPage = () => {
-  function onSubmit(e: SyntheticEvent) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  if (status === 'loading') return <>...Loading</>;
+
+  if (session) {
+    router.push('/');
+  }
+
+  const [formValues, setFormValues] = useState({ email: '', password: '' });
+
+  const onChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setFormValues({ ...formValues, [e.target.name]: e.target.value });
+  };
+
+  async function onSubmit(e: SyntheticEvent) {
     e.preventDefault();
+    const result = await signIn('credentials', {
+      ...formValues,
+      redirect: false,
+    });
   }
 
   return (
@@ -21,6 +42,8 @@ const login: NextPage = () => {
               <input
                 type="email"
                 name="email"
+                onChange={onChange}
+                value={formValues.email}
                 id="email-address"
                 placeholder="Email"
                 required
@@ -30,7 +53,9 @@ const login: NextPage = () => {
             <div className="flex flex-col mb-3">
               <input
                 type="password"
-                name="email"
+                name="password"
+                onChange={onChange}
+                value={formValues.password}
                 id="password"
                 placeholder="Password"
                 required
@@ -67,5 +92,7 @@ const login: NextPage = () => {
     </div>
   );
 };
+
+login.public = true;
 
 export default login;

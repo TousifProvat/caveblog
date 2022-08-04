@@ -1,27 +1,28 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '../../../../../lib/prisma';
+import { prisma } from '../../../../lib/prisma';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'DELETE') return res.status(405).end();
   const { id } = req.query;
   try {
-    const comment = await prisma.comment.findUnique({
+    const bookmark = await prisma.bookmark.findUnique({
       where: {
         id: Number(id),
       },
     });
 
-    if (!comment) return res.status(404).json({ message: 'Comment Not Found' });
+    if (!bookmark)
+      return res.status(404).json({ message: 'Bookmark Not Found' });
 
-    const deletedComment = await prisma.comment.delete({
+    const deletedBookmark = await prisma.bookmark.delete({
       where: {
         id: Number(id),
       },
     });
 
     return res.status(201).json({
-      bookmark: deletedComment,
-      message: 'Comment Deleted Successfully',
+      bookmark: deletedBookmark,
+      message: 'Bookmark Deleted Successfully',
     });
   } catch (err) {
     console.log({ err });

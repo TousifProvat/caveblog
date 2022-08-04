@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '../../../../lib/prisma';
+import { prisma } from '../../../lib/prisma';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
   try {
     //user will be replaced by req.userid
-    const { user, post, comment } = req.body;
+    const { user, post } = req.body;
 
     if (!user || !post)
       return res.status(400).json({ message: 'Invalid request' });
@@ -21,16 +21,15 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         message: 'Invalid Request',
       });
 
-    const newComment = await prisma.comment.create({
+    const newBookmark = await prisma.bookmark.create({
       data: {
         userId: user,
         postId: post,
-        commentId: comment || null,
       },
     });
 
     return res.status(201).json({
-      comment: newComment,
+      bookmark: newBookmark,
     });
   } catch (err) {
     console.log({ err });

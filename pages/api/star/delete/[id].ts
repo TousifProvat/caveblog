@@ -2,19 +2,25 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../../lib/prisma';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') return res.status(405).end();
-  const { slug } = req.query;
+  if (req.method !== 'DELETE') return res.status(405).end();
+  const { id } = req.query;
   try {
-    const post = await prisma.post.findUnique({
+    const star = await prisma.star.findUnique({
       where: {
-        slug: String(slug),
+        id: Number(id),
       },
     });
 
-    if (!post) return res.status(404).json({ message: 'Post Not Found' });
+    if (!star) return res.status(404).json({ message: 'Star Not Found' });
+
+    const deletedStar = await prisma.star.delete({
+      where: {
+        id: Number(id),
+      },
+    });
 
     return res.status(201).json({
-      post,
+      star: deletedStar,
     });
   } catch (err) {
     console.log({ err });

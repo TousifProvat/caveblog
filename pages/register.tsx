@@ -1,11 +1,34 @@
 import { NextPage } from 'next';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { SyntheticEvent } from 'react';
+import { useRouter } from 'next/router';
+import { ChangeEventHandler, FormEventHandler, useState } from 'react';
 
 const register: NextPage = () => {
-  function onSubmit(e: SyntheticEvent) {
-    e.preventDefault();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  if (status === 'loading') {
+    return <>Loading...</>;
   }
+
+  if (session) {
+    router.push('/');
+  }
+
+  const [formValues, setFormValues] = useState({
+    username: '',
+    email: '',
+    password: '',
+  });
+
+  const onChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setFormValues({ ...formValues, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit: FormEventHandler = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <div className="h-fit flex items-center justify-center pt-16 py-12 px-4 sm:px-6 lg:px-8">
@@ -19,8 +42,10 @@ const register: NextPage = () => {
             </div>
             <div className="flex flex-col mb-3">
               <input
-                type="email"
-                name="email"
+                type="text"
+                name="username"
+                onChange={onChange}
+                value={formValues.username}
                 id="username"
                 placeholder="Username"
                 required
@@ -31,6 +56,8 @@ const register: NextPage = () => {
               <input
                 type="email"
                 name="email"
+                onChange={onChange}
+                value={formValues.email}
                 id="email-address"
                 placeholder="Email Address"
                 required
@@ -40,7 +67,9 @@ const register: NextPage = () => {
             <div className="flex flex-col mb-3">
               <input
                 type="password"
-                name="email"
+                name="password"
+                onChange={onChange}
+                value={formValues.password}
                 id="password"
                 placeholder="Password"
                 required
@@ -69,5 +98,7 @@ const register: NextPage = () => {
     </div>
   );
 };
+
+register.public = true;
 
 export default register;

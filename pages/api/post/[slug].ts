@@ -1,12 +1,20 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '../../../../lib/prisma';
+import { prisma } from '../../../lib/prisma';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).end();
+  const { slug } = req.query;
   try {
-    const posts = await prisma.post.findMany();
+    const post = await prisma.post.findUnique({
+      where: {
+        slug: String(slug),
+      },
+    });
+
+    if (!post) return res.status(404).json({ message: 'Post Not Found' });
+
     return res.status(201).json({
-      posts,
+      post,
     });
   } catch (err) {
     console.log({ err });
