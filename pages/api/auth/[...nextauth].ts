@@ -1,51 +1,49 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import bcrypt from 'bcrypt';
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+// import bcrypt from 'bcrypt';
 //utils
 import { prisma } from '../../../lib/prisma';
 
-export const authOptions: NextAuthOptions = {
+export default NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {},
-      async authorize(credentials, req) {
-        const { email, password } = credentials as {
-          email: string;
-          password: string;
-        };
-
-        const user = await prisma.user.findUnique({
-          where: {
-            email,
-          },
-        });
-
-        if (user) {
-          const isPassword = await bcrypt.compare(password, user.password);
-          if (!isPassword) return null;
-          user.password = '';
-          // Any object returned will be saved in `user` property of the JWT
-          return user;
-        } else {
-          // If you return null then an error will be displayed advising the user to check their details.
-          return null;
-
-          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
-        }
-      },
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
+    // CredentialsProvider({
+    //   name: 'Credentials',
+    //   credentials: {},
+    //   async authorize(credentials, req) {
+    //     const { email, password } = credentials as {
+    //       email: string;
+    //       password: string;
+    //     };
+    //     const user = await prisma.user.findUnique({
+    //       where: {
+    //         email,
+    //       },
+    //     });
+    //     if (user) {
+    //       const isPassword = await bcrypt.compare(password, user.password);
+    //       if (!isPassword) return null;
+    //       // Any object returned will be saved in `user` property of the JWT
+    //       return user;
+    //     } else {
+    //       // If you return null then an error will be displayed advising the user to check their details.
+    //       return null;
+    //       // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+    //     }
+    //   },
+    // }),
   ],
   callbacks: {
-    async jwt({ token, user, account, profile, isNewUser }) {
-      if (user) token.user = user;
-      return token;
-    },
     async session({ session, user, token }) {
-      if (token.user) session.user = token.user;
+      delete user.password;
+      delete user.emailVerified;
+      session.user = user;
       return session;
     },
   },
-};
-
-export default NextAuth(authOptions);
+});

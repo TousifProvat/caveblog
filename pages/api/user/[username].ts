@@ -4,26 +4,20 @@ import { prisma } from '../../../lib/prisma';
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).end();
   try {
-    const { id } = req.query;
-    const profile = await prisma.profile.findUnique({
+    const { username } = req.query;
+
+    const user = await prisma.user.findUnique({
       where: {
-        id: String(id),
+        username: String(username),
       },
       include: {
-        user: {
-          select: {
-            username: true,
-            email: true,
-            // createdAt: true,
-          },
-        },
+        Profile: true,
       },
     });
 
-    if (!profile)
-      return res.status(404).json({ message: `profile doesn't exist` });
+    if (!user) return res.status(404).json({ message: `User doesn't exist` });
 
-    return res.status(200).json({ profile });
+    return res.status(200).json({ user });
   } catch (err) {
     console.log({ err });
     return res.status(500).json({ message: 'Something went wrong' });

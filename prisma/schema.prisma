@@ -42,9 +42,11 @@ model Session {
 model User {
   id            String     @id @default(cuid())
   name          String?
+  username      String?    @unique
   email         String?    @unique
   emailVerified DateTime?
   image         String?
+  password      String?
   accounts      Account[]
   sessions      Session[]
   Profile       Profile?
@@ -63,13 +65,13 @@ model VerificationToken {
 }
 
 model Profile {
-  id       String @id @default(uuid())
-  user     User   @relation(fields: [userId], references: [id])
-  userId   String @unique
-  headline String
-  bio      String
-  website  String
-  location String
+  id       String  @id @default(uuid())
+  user     User    @relation(fields: [userId], references: [id])
+  userId   String  @unique
+  headline String?
+  bio      String?
+  website  String?
+  location String?
 }
 
 model Post {

@@ -19,7 +19,7 @@
 
 ## MVP:
 
-1. User can register using google/github/email ✅partial
+1. User can register using google/github ✅partial
 2. User can signin using google/github/email ✅partial
 3. User will have a profile ✅partial
 4. user can read/create/delete/update blogs ✅p

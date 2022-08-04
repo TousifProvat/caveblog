@@ -1,7 +1,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
-import Sidebar from './Sidebar';
+import ProfileDropDown from './ProfileDropDown';
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -18,23 +18,19 @@ const Navbar = () => {
               </a>
             </Link>
           </div>
-          <div
+          {/* <div
             className="burger space-y-2 sm:hidden cursor-pointer hover:bg-blue-200 p-2 rounded"
             onClick={() => setShow((prev) => !prev)}
           >
             <div className={`line-1 w-8 h-[4px] bg-slate-600 rounded`}></div>
             <div className={`line-2 w-8 h-[4px] bg-slate-600 rounded`}></div>
             <div className="line-2 w-8 h-[4px] bg-slate-600 rounded"></div>
-          </div>
+          </div> */}
         </div>
-        <nav className="right-side">
-          <ul className="flex space-x-4 text-l items-center">
-            <li className="hidden sm:block">
-              <Link href="/">
-                <a>Feed</a>
-              </Link>
-            </li>
-            {!session && (
+        <nav className="right-side flex items-center">
+          {session && <ProfileDropDown />}
+          {!session && (
+            <ul className="flex space-x-4 text-l items-center">
               <li className="hidden sm:block">
                 <Link href="/login">
                   <a className="hover:bg-blue-200 hover:text-blue-500 px-3 py-3 rounded">
@@ -42,27 +38,17 @@ const Navbar = () => {
                   </a>
                 </Link>
               </li>
-            )}
-            <li>
-              {session ? (
-                <button
-                  onClick={() => signOut({ redirect: false })}
-                  className="px-2 py-2 border rounded border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
-                >
-                  Signout
-                </button>
-              ) : (
+              <li>
                 <Link href={'/register'}>
                   <a className="px-3 py-3 border rounded border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white">
                     Create Account
                   </a>
                 </Link>
-              )}
-            </li>
-          </ul>
+              </li>
+            </ul>
+          )}
         </nav>
       </div>
-      {show && <Sidebar setShow={setShow} />}
     </div>
   );
 };
