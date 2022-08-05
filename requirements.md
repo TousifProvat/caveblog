@@ -63,10 +63,10 @@
 
 - bookmark:
 
-  - get user bookmarks: api/v1/bookmark/user/:id GET @PRIVATE
-  - get post bookmarks: api/v1/bookmark/post/:id GET @PUBLIC
-  - create bookmark: api/v1/bookmark/create POST @PRIVATE
-  - delete bookmark: api/v1/bookmark/delete/[id] DELETE @PRIVATE
+  - get user bookmarks: api/bookmark/user/:id GET @PRIVATE
+  - get post bookmarks: api/bookmark/post/:id GET @PUBLIC
+  - create bookmark: api/bookmark/create POST @PRIVATE
+  - delete bookmark: api/bookmark/delete/[id] DELETE @PRIVATE
 
 - comment:
 
