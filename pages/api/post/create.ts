@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getSession } from 'next-auth/react';
 import { prisma } from '../../../lib/prisma';
 
 const slugGenerator = (name: string) => {
@@ -10,9 +11,16 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
   try {
     //user will be replaced by req.userid
-    const { user, title, body } = req.body;
+    const { title, body } = req.body;
+    const session = await getSession({ req });
 
-    if (!user || !title || !body)
+    if (!session) {
+      return res.status(401).json({
+        message: 'Unauthorized Access',
+      });
+    }
+
+    if (!title || !body)
       return res.status(400).json({ message: 'Invalid request' });
 
     const titleExist = await prisma.post.findUnique({
@@ -28,7 +36,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
     const newPost = await prisma.post.create({
       data: {
-        authorId: user,
+        authorId: String(session.user?.id),
         title,
         body,
         slug: slugGenerator(title),
@@ -37,6 +45,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(201).json({
       post: newPost,
+      message: 'Post Created Successfully',
     });
   } catch (err) {
     console.log({ err });

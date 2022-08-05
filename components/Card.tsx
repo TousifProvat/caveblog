@@ -1,18 +1,30 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-const Card = () => {
+interface CardProps {
+  name: string;
+  title: string;
+  image: string;
+
+  slug: string;
+}
+
+const Card = (props: CardProps) => {
+  const { name, title, image, slug } = props;
   return (
-    <Link href="/tousifahmed/why-you-should-use-javascript">
+    <Link href={`/posts/${slug}`}>
       <a>
         <div className="card flex flex-col justify-between bg-white rounded-md w-full h-fit shadow-sm hover:shadow-md relative overflow-x-hidden space-y-2 pb-5 ">
-          <div className="blog-image w-full h-40 bg-gray-200"></div>
+          <div className="blog-image w-30 h-40 bg-gray-200"></div>
           <div className="author flex space-x-2 pl-2">
-            <div className="author-img h-9 w-9 rounded-full bg-gray-200"></div>
+            <div className="author-img h-9 w-9 rounded-full bg-gray-200 overflow-hidden">
+              {image && (
+                <Image src={image} objectFit="contain" width={36} height={36} />
+              )}
+            </div>
             <div className="author-details">
-              <div className="author-name text-xs font-semibold">
-                John Clerk
-              </div>
+              <div className="author-name text-xs font-semibold">{name}</div>
               <div className="post-time">
                 <span className="text-xs text-slate-500">
                   Jul 30 (16hrs ago)
@@ -21,7 +33,7 @@ const Card = () => {
             </div>
           </div>
           <h2 className="text-[1.4rem] sm:text-[1.5rem] font-bold pl-12 pb-2">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+            {title}
           </h2>
           <div className="flex align-middle justify-evenly  w-full">
             <div className="star group flex space-x-1 items-center hover:bg-yellow-200 px-2 py-1 rounded">

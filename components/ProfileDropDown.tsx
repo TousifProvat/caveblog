@@ -1,7 +1,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ProfileDropDown = () => {
   const { data: session, status } = useSession();

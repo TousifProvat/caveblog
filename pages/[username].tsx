@@ -70,11 +70,13 @@ const username = ({ user }: propTypes) => {
             <div className="more-details text-center flex space-x-2 justify-center items-center text-slate-400">
               <p className="location text-sm">{user?.Profile?.location}</p>
               <p className="website text-sm">
-                <Link href={user?.Profile?.website}>
-                  <a target="_blank" className="hover:text-blue-500">
-                    {user?.Profile?.website}
-                  </a>
-                </Link>
+                {user?.Profile?.website && (
+                  <Link href={user.Profile.website}>
+                    <a target="_blank" className="hover:text-blue-500">
+                      {user.Profile.website}
+                    </a>
+                  </Link>
+                )}
               </p>
             </div>
             {/* <p className="joined text-slate-400"> Joined on 2026 June 2021</p> */}
@@ -142,6 +144,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const data = await res.json();
 
+  console.log(data);
   if (res.status === 404) {
     return {
       notFound: true,

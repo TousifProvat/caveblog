@@ -9,6 +9,43 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       where: {
         slug: String(slug),
       },
+      include: {
+        comments: {
+          include: {
+            user: {
+              select: {
+                username: true,
+                name: true,
+                image: true,
+              },
+            },
+            replies: {
+              include: {
+                user: {
+                  select: {
+                    username: true,
+                    name: true,
+                    image: true,
+                  },
+                },
+              },
+              orderBy: {
+                id: 'desc',
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+        author: {
+          select: {
+            username: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
     });
 
     if (!post) return res.status(404).json({ message: 'Post Not Found' });
