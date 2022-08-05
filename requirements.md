@@ -70,11 +70,11 @@
 
 - comment:
 
-  - get user comments: api/v1/comment/user/:id GET @PRIVATE
-  - get post comments: api/v1/comment/post/:id GET @PUBLIC
-  - create comment: api/v1/comment/create POST @PRIVATE
-  - update comment: api/v1/comment/update/[id] PATCH @PRIVATE
-  - delete comment: api/v1/comment/delete/[id] DELETE @PRIVATE
+  - get user comments: api/comment/user/:id GET @PRIVATE
+  - get post comments: api/comment/post/:id GET @PUBLIC
+  - create comment: api/comment/create POST @PRIVATE
+  - update comment: api/comment/update/[id] PATCH @PRIVATE
+  - delete comment: api/comment/delete/[id] DELETE @PRIVATE
 
 ## Data Models:
 
