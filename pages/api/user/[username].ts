@@ -12,6 +12,22 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       },
       include: {
         Profile: true,
+        Comment: {
+          include: {
+            post: true,
+          },
+        },
+        Post: true,
+        Star: {
+          include: {
+            post: true,
+          },
+        },
+        Bookmark: {
+          include: {
+            post: true,
+          },
+        },
       },
     });
 

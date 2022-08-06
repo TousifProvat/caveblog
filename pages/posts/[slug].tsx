@@ -6,51 +6,11 @@ import { useRouter } from 'next/router';
 import React, { SyntheticEvent, useState } from 'react';
 import BlogComment from '../../components/BlogComment';
 import axios from '../../lib/axios';
-
-interface Reply {
-  id: number;
-  body: string;
-  postId: number;
-  userId: number;
-  commentId: number;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    username: string;
-    name: string;
-    image: string;
-  };
-}
-
-interface commentType {
-  id: number;
-  body: string;
-  postId: number;
-  userId: number;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    username: string;
-    name: string;
-    image: string;
-  };
-  replies: Reply[];
-}
-
-interface postTypes {
-  id: number;
-  title: string;
-  body: string;
-  author: {
-    username: string;
-    name: string;
-    image: string;
-  };
-}
+import { commentTypes, postTypes } from '../../types';
 
 interface slugPropTypes {
   post: postTypes;
-  comments: commentType[];
+  comments: commentTypes[];
 }
 
 const slug = ({ post, comments }: slugPropTypes) => {

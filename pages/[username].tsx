@@ -3,29 +3,28 @@ import { useRouter } from 'next/router';
 import axios from '../lib/axios';
 
 //component
-import Post from '../components/Post';
+import Post from '../components/RecentPost';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-interface profileProps {
-  headline: string;
-  bio: string;
-  website: string;
-  location: string;
-}
+import {
+  bookmarkTypes,
+  commentTypes,
+  postTypes,
+  starTypes,
+  userTypes,
+} from '../types';
+import RecentComment from '../components/RecentComment';
 
 interface propTypes {
-  user: {
-    username: string;
-    email: string;
-    name: string;
-    image: string;
-    Profile: profileProps;
-  };
+  user: userTypes;
+  comments: commentTypes[];
+  posts: postTypes[];
+  stars: starTypes[];
+  bookmarks: bookmarkTypes[];
 }
 
-const username = ({ user }: propTypes) => {
+const username = ({ user, comments, posts, stars, bookmarks }: propTypes) => {
   const { data: session, status } = useSession();
 
   return (
@@ -83,52 +82,44 @@ const username = ({ user }: propTypes) => {
           </div>
         </div>
         <div className="profile-bottom mt-[17.5rem] sm:mt-[24rem] grid gap-4 grid-cols-1 sm:grid-cols-2">
-          <div className="comment-section rounded-md overflow-hidden border-2 border-gray-100 bg-white ">
+          <div className="post-section rounded-md overflow-hidden border-2 border-gray-100 bg-white ">
             <div className="header px-4 py-3 border border-b-gray-100 border-t-0">
               <h2 className="text-lg font-bold">Recent Posts</h2>
             </div>
-            <div className="comments">
-              <Post />
-              <Post />
-              <Post />
-              <Post />
-              <Post />
+            <div className="posts max-h-[400px] overflow-y-auto">
+              {posts.map((post, index) => (
+                <Post post={post} key={index} />
+              ))}
             </div>
           </div>
-          <div className="starred-post-section rounded-md overflow-hidden border-2 border-gray-100 bg-white ">
+          <div className="comment-section rounded-md overflow-hidden border-2 border-gray-100 bg-white ">
             <div className="header px-4 py-3 border border-b-gray-100 border-t-0">
               <h2 className="text-lg font-bold">Recent Comments</h2>
             </div>
-            <div className="comments">
-              <Post />
-              <Post />
-              <Post />
-              <Post />
-              <Post />
+            <div className="comments max-h-[400px] overflow-y-auto">
+              {comments.map((comment, index) => (
+                <RecentComment comment={comment} key={index} />
+              ))}
             </div>
           </div>
-          <div className="post-section rounded-md overflow-hidden border-2 border-gray-100 bg-white ">
+          <div className="star-section rounded-md overflow-hidden border-2 border-gray-100 bg-white ">
             <div className="header px-4 py-3 border border-b-gray-100 border-t-0">
               <h2 className="text-lg font-bold">Starred Posts</h2>
             </div>
-            <div className="comments">
-              <Post />
-              <Post />
-              <Post />
-              <Post />
-              <Post />
+            <div className="stars max-h-[400px] overflow-y-auto">
+              {stars.map((star, index) => (
+                <Post post={star.post} key={index} />
+              ))}
             </div>
           </div>
-          <div className="post-section rounded-md overflow-hidden border-2 border-gray-100 bg-white ">
+          <div className="bookmark-section rounded-md overflow-hidden border-2 border-gray-100 bg-white ">
             <div className="header px-4 py-3 border border-b-gray-100 border-t-0">
               <h2 className="text-lg font-bold">Bookmarked Posts</h2>
             </div>
-            <div className="comments">
-              <Post />
-              <Post />
-              <Post />
-              <Post />
-              <Post />
+            <div className="bookmarks max-h-[400px] overflow-y-auto">
+              {bookmarks.map((bookmark, index) => (
+                <Post post={bookmark.post} key={index} />
+              ))}
             </div>
           </div>
         </div>
@@ -144,7 +135,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const data = await res.json();
 
-  console.log(data);
   if (res.status === 404) {
     return {
       notFound: true,
@@ -154,6 +144,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user: data.user,
+      comments: data.user.Comment,
+      posts: data.user.Post,
+      stars: data.user.Star,
+      bookmarks: data.user.Bookmark,
     },
   };
 };

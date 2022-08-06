@@ -17,6 +17,7 @@ export interface postTypes {
   id: number;
   title: string;
   body: string;
+  slug: string;
   author: {
     username: string;
     name: string;
@@ -36,6 +37,7 @@ export interface commentTypes {
     name: string;
     image: string;
   };
+  post: postTypes;
   replies: Reply[];
 }
 
