@@ -23,6 +23,9 @@ export interface postTypes {
     name: string;
     image: string;
   };
+  comments: commentTypes[];
+  stars: starTypes[];
+  bookmarks: bookmarkTypes[];
 }
 
 export interface commentTypes {
