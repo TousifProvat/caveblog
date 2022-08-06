@@ -3,38 +3,44 @@ import { getSession } from 'next-auth/react';
 import { prisma } from '../../../lib/prisma';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== 'DELETE') return res.status(405).end();
+  const { slug } = req.body;
+
   try {
     const session = await getSession({ req });
 
     if (!session || !session?.user?.id)
       return res.status(401).json({ message: 'Unauthorized Access' });
-    //user will be replaced by req.userid
-    const { slug } = req.body;
 
-    if (!slug) return res.status(400).json({ message: 'Invalid request' });
-
-    const postExist = await prisma.post.findUnique({
+    const post = await prisma.post.findUnique({
       where: {
-        slug: String(slug),
+        slug,
       },
     });
 
-    if (!postExist)
-      return res.status(400).json({
-        message: 'Invalid Request',
+    if (!post)
+      return res.status(404).json({
+        message: 'Post Not Found',
       });
 
-    const newStar = await prisma.star.create({
-      data: {
+    const star = await prisma.star.findFirst({
+      where: {
+        postId: post.id,
         userId: session.user.id,
-        postId: postExist.id,
       },
     });
 
-    return res.status(201).json({
-      star: newStar,
-      message: 'Starred Successfully',
+    if (!star) return res.status(404).json({ message: 'Star Not Found' });
+
+    const deletedStar = await prisma.star.delete({
+      where: {
+        id: star.id,
+      },
+    });
+
+    return res.status(200).json({
+      star: deletedStar,
+      message: 'Deleted Successfully',
     });
   } catch (err) {
     console.log({ err });

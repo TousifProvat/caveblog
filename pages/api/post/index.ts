@@ -14,6 +14,17 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
             image: true,
           },
         },
+
+        stars: {
+          select: {
+            id: true,
+          },
+        },
+        bookmarks: {
+          select: {
+            id: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',

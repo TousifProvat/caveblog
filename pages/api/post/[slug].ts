@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getSession } from 'next-auth/react';
 import { prisma } from '../../../lib/prisma';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
@@ -45,6 +46,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
             image: true,
           },
         },
+        stars: true,
+        bookmarks: true,
       },
     });
 

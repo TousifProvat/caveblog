@@ -1,18 +1,22 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getSession } from 'next-auth/react';
 import { prisma } from '../../../lib/prisma';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
   try {
-    //user will be replaced by req.userid
-    const { user, post } = req.body;
+    const session = await getSession({ req });
 
-    if (!user || !post)
-      return res.status(400).json({ message: 'Invalid request' });
+    if (!session || !session?.user?.id)
+      return res.status(401).json({ message: 'Unauthorized Access' });
+    //user will be replaced by req.userid
+    const { slug } = req.body;
+
+    if (!slug) return res.status(400).json({ message: 'Invalid request' });
 
     const postExist = await prisma.post.findUnique({
       where: {
-        id: Number(post),
+        slug: String(slug),
       },
     });
 
@@ -21,15 +25,16 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         message: 'Invalid Request',
       });
 
-    const newBookmark = await prisma.bookmark.create({
+    const newbookmark = await prisma.bookmark.create({
       data: {
-        userId: user,
-        postId: post,
+        userId: session.user.id,
+        postId: postExist.id,
       },
     });
 
     return res.status(201).json({
-      bookmark: newBookmark,
+      bookmark: newbookmark,
+      message: 'bookmarkred Successfully',
     });
   } catch (err) {
     console.log({ err });
