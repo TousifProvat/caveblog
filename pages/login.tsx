@@ -1,10 +1,9 @@
-import { NextPage } from 'next';
 import Link from 'next/link';
-import { signIn, getSession, useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { ChangeEventHandler, SyntheticEvent, useState } from 'react';
 import { useRouter } from 'next/router';
 
-const login: NextPage = () => {
+const login = () => {
   const [formValues, setFormValues] = useState({ email: '', password: '' });
 
   const { data: session, status } = useSession();

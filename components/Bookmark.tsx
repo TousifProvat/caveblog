@@ -10,6 +10,7 @@ const Bookmark = ({ slug }: propTypes) => {
   const { data: session, status } = useSession();
   const [active, setActive] = useState(false);
   const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   //function to bookmark post
 
@@ -38,6 +39,7 @@ const Bookmark = ({ slug }: propTypes) => {
   //function to fetch bookmarks count and check if user bookmarked or not
   const fetchBookmarks = async () => {
     try {
+      setLoading(true);
       const {
         data,
       }: {
@@ -50,6 +52,8 @@ const Bookmark = ({ slug }: propTypes) => {
       setActive(data.bookmarked);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,6 +63,9 @@ const Bookmark = ({ slug }: propTypes) => {
       fetchBookmarks();
     }
   }, [status]);
+
+  if (loading) return <>...Loading</>;
+
   return (
     <div className="bookmark flex flex-col space-y-1 items-center">
       <div className="bookmark-icon" onClick={() => toggleBookmarkPost(slug)}>

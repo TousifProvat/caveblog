@@ -19,14 +19,14 @@
 
 ## MVP:
 
-1. User can register using google/github ✅partial
-2. User can signin using google/github/email ✅partial
-3. User will have a profile ✅partial
-4. user can read/create/delete/update blogs ✅p
+1. User can register using google✅/github
+2. User can signin using google✅/github/email
+3. User will have a profile ✅
+4. user can read✅/create✅/delete/update blogs
 5. Blogsfeed for users ✅
 6. User can star blogs ✅
-7. User can bookmark blogs
-8. User can comment on posts
+7. Blogsfeed for users ✅
+8. User can comment on posts ✅
 
 ## Tech used:
 

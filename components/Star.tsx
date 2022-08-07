@@ -10,6 +10,7 @@ const Star = ({ slug }: propTypes) => {
   const { data: session, status } = useSession();
   const [active, setActive] = useState(false);
   const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   //function to star post
 
@@ -38,6 +39,7 @@ const Star = ({ slug }: propTypes) => {
   //function to fetch stars count and check if user starred or not
   const fetchStars = async () => {
     try {
+      setLoading(true);
       const {
         data,
       }: {
@@ -50,6 +52,8 @@ const Star = ({ slug }: propTypes) => {
       setActive(data.starred);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,6 +63,8 @@ const Star = ({ slug }: propTypes) => {
       fetchStars();
     }
   }, [status]);
+
+  if (loading) return <>...Loading</>;
 
   return (
     <div className="star flex flex-col space-y-1 items-center">
