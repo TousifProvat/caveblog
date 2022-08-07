@@ -26,6 +26,7 @@ export interface postTypes {
   comments: commentTypes[];
   stars: starTypes[];
   bookmarks: bookmarkTypes[];
+  createdAt: string;
 }
 
 export interface commentTypes {

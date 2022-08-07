@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import formatDate from '../utils/formatDate';
 
 interface Reply {
   id: number;
@@ -39,7 +40,9 @@ const CommentReply = ({ reply }: propTypes) => {
           <Link href={`/${reply.user.username}`}>
             <a>{reply.user.name}</a>
           </Link>
-          <span className="pl-4 text-xs font-light text-slate-500">16 Jun</span>
+          <span className="pl-4 text-xs font-light text-slate-500">
+            {formatDate(reply.createdAt)}
+          </span>
         </h2>
         <p className="comment-body text-sm font-light py-1">{reply.body}</p>
       </div>

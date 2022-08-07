@@ -5,7 +5,6 @@ interface PropsTypes {
   post: postTypes;
 }
 const Post = ({ post }: PropsTypes) => {
-  console.log(post);
   return (
     <Link href={`/posts/${post.slug}`}>
       <div

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { SyntheticEvent, useState } from 'react';
 import axios from '../lib/axios';
+import formatDate from '../utils/formatDate';
 import CommentReply from './CommentReply';
 
 interface Reply {
@@ -82,7 +83,7 @@ const BlogComment = ({ comment }: propTypes) => {
               <a>{comment.user.name}</a>
             </Link>
             <span className="pl-4 text-xs font-light text-slate-500">
-              16 Jun
+              {formatDate(comment.createdAt)}
             </span>
           </h2>
           <p className="comment-body text-sm font-light py-1">{comment.body}</p>

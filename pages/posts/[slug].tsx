@@ -8,6 +8,7 @@ import Bookmark from '../../components/Bookmark';
 import Star from '../../components/Star';
 import axios from '../../lib/axios';
 import { commentTypes, postTypes } from '../../types';
+import formatDate from '../../utils/formatDate';
 
 interface slugPropTypes {
   post: postTypes;
@@ -61,7 +62,9 @@ const slug = ({ post, comments }: slugPropTypes) => {
                   </h2>
                 </a>
               </Link>
-              <span className="text-xs text-slate-500">Posted on 31 July</span>
+              <span className="text-xs text-slate-500">
+                Posted on {formatDate(post.createdAt)}
+              </span>
             </div>
           </div>
           <h2 className="title text-3xl font-bold">{post.title}</h2>

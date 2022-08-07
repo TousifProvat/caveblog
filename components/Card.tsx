@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { postTypes } from '../types';
+import formatDate from '../utils/formatDate';
 
 interface propTypes {
   post: postTypes;
@@ -30,7 +31,7 @@ const Card = ({ post }: propTypes) => {
               </div>
               <div className="post-time">
                 <span className="text-xs text-slate-500">
-                  Jul 30 (16hrs ago)
+                  {post.createdAt && formatDate(post.createdAt)}
                 </span>
               </div>
             </div>
