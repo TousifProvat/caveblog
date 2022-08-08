@@ -2,9 +2,9 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { SyntheticEvent, useState } from 'react';
-import BlogComment from '../../components/BlogComment';
+import { SyntheticEvent, useMemo, useState } from 'react';
 import Bookmark from '../../components/Bookmark';
+import CommentList from '../../components/CommentList';
 import Star from '../../components/Star';
 import axios from '../../lib/axios';
 import { commentTypes, postTypes } from '../../types';
@@ -16,12 +16,14 @@ interface slugPropTypes {
 }
 
 const slug = ({ post, comments }: slugPropTypes) => {
-  const [boxFocus, setBoxFocus] = useState<boolean>(false);
-  const [comment, setComment] = useState<string>('');
-
   const { data: session } = useSession();
 
+  const [boxFocus, setBoxFocus] = useState<boolean>(false);
+
+  const [comment, setComment] = useState<string>(''); //comment body
+
   // calls the create comment api
+
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
@@ -36,6 +38,19 @@ const slug = ({ post, comments }: slugPropTypes) => {
       alert(err.response.data.message);
     }
   };
+
+  //
+  const commentsByParentId = useMemo(() => {
+    const obj: any = {};
+    comments.forEach((comment) => {
+      obj[comment.parentId === null ? 'parent' : comment.parentId] ||= [];
+      obj[comment.parentId === null ? 'parent' : comment.parentId].push(
+        comment
+      );
+    });
+
+    return obj;
+  }, [comments]);
 
   return (
     <div className="min-h-screen w-full flex flex-col sm:flex-row sm:justify-between relative">
@@ -112,7 +127,7 @@ const slug = ({ post, comments }: slugPropTypes) => {
         </div>
         <div className="discussion px-4 space-y-6 pb-2">
           <h2 className="section-title text-xl font-bold">
-            Discussion ({comments.length})
+            Discussion ({comments?.length})
           </h2>
           {session && (
             <form
@@ -151,11 +166,7 @@ const slug = ({ post, comments }: slugPropTypes) => {
               )}
             </form>
           )}
-          <div className="comment-container flex flex-col space-y-10">
-            {comments.map((comment, index) => (
-              <BlogComment key={index} comment={comment} />
-            ))}
-          </div>
+          <CommentList comments={commentsByParentId} />
         </div>
       </div>
     </div>

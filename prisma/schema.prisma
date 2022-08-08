@@ -49,12 +49,11 @@ model User {
   password      String?
   accounts      Account[]
   sessions      Session[]
-  Profile       Profile?
-  Post          Post[]
-  Star          Star[]
-  Bookmark      Bookmark[]
-  Comment       Comment[]
-  replies       Reply[]
+  profile       Profile?
+  posts         Post[]
+  stars         Star[]
+  bookmarks     Bookmark[]
+  comments      Comment[]
 }
 
 model VerificationToken {
@@ -67,7 +66,7 @@ model VerificationToken {
 
 model Profile {
   id       String  @id @default(uuid())
-  user     User    @relation(fields: [userId], references: [id])
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String  @unique
   headline String?
   bio      String?
@@ -77,7 +76,7 @@ model Profile {
 
 model Post {
   id        Int        @id @default(autoincrement())
-  author    User       @relation(fields: [authorId], references: [id])
+  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   title     String     @unique
   body      String
@@ -86,14 +85,13 @@ model Post {
   bookmarks Bookmark[]
   comments  Comment[]
   createdAt DateTime   @default(now())
-  replies   Reply[]
 
   @@index([title])
 }
 
 model Star {
   id     Int    @id @default(autoincrement())
-  post   Post   @relation(fields: [postId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId Int
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -101,34 +99,23 @@ model Star {
 
 model Bookmark {
   id        Int      @id @default(autoincrement())
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   createdAt DateTime @default(now())
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   body      String
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  replies   Reply[]
-}
-
-model Reply {
-  id        Int      @id @default(autoincrement())
-  body      String
-  post      Post     @relation(fields: [postId], references: [id])
-  postId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  commentId Int
-  comment   Comment  @relation(fields: [commentId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  parent    Comment?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children  Comment[] @relation("ParentChild")
+  parentId  Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }

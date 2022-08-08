@@ -14,7 +14,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         message: 'Unauthorized Access',
       });
 
-    const { post, comment, commentId = null } = req.body;
+    const { post, comment, parentId = null } = req.body;
 
     if (!post) return res.status(400).json({ message: 'Invalid request' });
 
@@ -30,12 +30,12 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       });
 
     let newComment;
-    if (commentId) {
-      newComment = await prisma.reply.create({
+    if (parentId) {
+      newComment = await prisma.comment.create({
         data: {
           userId: String(session.user?.id),
           postId: post,
-          commentId,
+          parentId,
           body: comment,
         },
       });

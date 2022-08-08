@@ -1,49 +1,27 @@
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { SyntheticEvent, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import axios from '../lib/axios';
+import { commentTypes } from '../types';
 import formatDate from '../utils/formatDate';
 import CommentReply from './CommentReply';
 
-interface Reply {
-  id: number;
-  body: string;
-  postId: number;
-  userId: number;
-  commentId: number;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    username: string;
-    name: string;
-    image: string;
-  };
-}
-
-interface Comment {
-  id: number;
-  body: string;
-  postId: number;
-  userId: number;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    username: string;
-    name: string;
-    image: string;
-  };
-  replies: Reply[];
-}
-
 interface propTypes {
-  comment: Comment;
+  comment: commentTypes;
+  replies: any;
 }
 
-const BlogComment = ({ comment }: propTypes) => {
+const BlogComment = ({ comment, replies }: propTypes) => {
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
   const [reply, setReply] = useState<string>('');
   const [show, setShow] = useState<boolean>(false);
+  const [Replies, setReplies] = useState<commentTypes[]>([]);
+
+  useEffect(() => {
+    if (replies === undefined) return;
+    setReplies(replies);
+  }, [replies]);
 
   const { data: session } = useSession();
 
@@ -53,7 +31,7 @@ const BlogComment = ({ comment }: propTypes) => {
       const { data } = await axios.post('/comment/create', {
         comment: reply,
         post: comment.postId,
-        commentId: comment.id,
+        parentId: comment.id,
       });
       setReply('');
       setBoxFocus(false);
@@ -67,10 +45,10 @@ const BlogComment = ({ comment }: propTypes) => {
   return (
     <div className="comment-box flex flex-col space-y-2">
       <div className="comment flex space-x-2">
-        <Link href={`/${comment.user.username}`}>
+        <Link href={`/${comment?.user.username}`}>
           <a>
             <div className="profile-avatar w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
-              <Image src={comment.user.image} width={40} height={40} />
+              <Image src={comment?.user.image} width={40} height={40} />
             </div>
           </a>
         </Link>{' '}
@@ -79,14 +57,16 @@ const BlogComment = ({ comment }: propTypes) => {
               border-[1px] rounded-md border-gray-200  px-3 py-1 flex flex-col justify-between"`}
         >
           <h2 className="comment-author-name font-semibold text-lg flex items-center">
-            <Link href={`/${comment.user.username}`}>
-              <a>{comment.user.name}</a>
+            <Link href={`/${comment?.user?.username}`}>
+              <a>{comment?.user.name}</a>
             </Link>
             <span className="pl-4 text-xs font-light text-slate-500">
-              {formatDate(comment.createdAt)}
+              {formatDate(comment?.createdAt)}
             </span>
           </h2>
-          <p className="comment-body text-sm font-light py-1">{comment.body}</p>
+          <p className="comment-body text-sm font-light py-1">
+            {comment?.body}
+          </p>
           {session && (
             <div
               className="group w-fit interactions flex items-center space-x-1 py-2 cursor-pointer"
@@ -153,9 +133,10 @@ const BlogComment = ({ comment }: propTypes) => {
         </form>
       )}
       <div className="comment-container flex flex-col space-y-2">
-        {comment.replies.map((reply, index) => (
-          <CommentReply key={index} reply={reply} />
-        ))}
+        {Replies?.length > 0 &&
+          replies.map((reply: commentTypes, index: number) => (
+            <CommentReply key={index} reply={reply} />
+          ))}
       </div>
     </div>
   );

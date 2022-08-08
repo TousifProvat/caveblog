@@ -42,22 +42,7 @@ export interface commentTypes {
     image: string;
   };
   post: postTypes;
-  replies: Reply[];
-}
-
-export interface Reply {
-  id: number;
-  body: string;
-  postId: number;
-  userId: number;
-  commentId: number;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    username: string;
-    name: string;
-    image: string;
-  };
+  parentId: number;
 }
 
 export interface starTypes {
