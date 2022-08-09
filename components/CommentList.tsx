@@ -15,7 +15,7 @@ interface PropTypes {
 
 const CommentList = ({ comments }: PropTypes) => {
   return (
-    <div className="comment-container flex flex-col space-y-10">
+    <div className="comment-container flex flex-col space-y-5">
       {comments['parent']?.map((comment, index) => (
         <BlogComment
           key={index}

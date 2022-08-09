@@ -1,7 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../lib/prisma';
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'GET') return res.status(405).end();
   const { slug } = req.query;
   try {
@@ -36,7 +39,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       },
     });
 
-    if (!post) return res.status(404).json({ message: 'Post Not Found' });
+    if (!post) return res.status(404).json({});
 
     return res.status(201).json({
       post,

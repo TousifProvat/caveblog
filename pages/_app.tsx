@@ -15,30 +15,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     >
       <Navbar />
       <Layout>
-        {Component.public ? (
-          <Component {...pageProps} />
-        ) : (
-          <AuthGuard>
-            <Component {...pageProps} />
-          </AuthGuard>
-        )}
+        <Component {...pageProps} />
       </Layout>
     </SessionProvider>
   );
 }
-
-const AuthGuard = ({ children }: { children: ReactNode }) => {
-  const router = useRouter();
-  const { data: session, status } = useSession({
-    required: true,
-    onUnauthenticated: () => {
-      router.push('/login');
-    },
-  });
-
-  if (status === 'loading') return <>....loading</>;
-
-  return <>{children}</>;
-};
 
 export default MyApp;

@@ -22,6 +22,7 @@ const Card = ({ post }: propTypes) => {
                   objectFit="contain"
                   width={36}
                   height={36}
+                  alt={post.author.name}
                 />
               )}
             </div>

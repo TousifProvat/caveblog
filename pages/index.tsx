@@ -3,11 +3,11 @@ import Card from '../components/Card';
 import axios from '../lib/axios';
 import { postTypes } from '../types';
 
-interface propsTypes {
+interface PropTypes {
   posts: postTypes[];
 }
 
-const Home = ({ posts }: propsTypes) => {
+const Home: NextPage<PropTypes> = ({ posts }) => {
   return (
     <div className="h-fit pb-5 pt-10">
       <div className="w-full grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
@@ -28,7 +28,5 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
-
-Home.public = true;
 
 export default Home;

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../lib/prisma';
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export default async function handler (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).end();
   try {
     const { username } = req.query;
@@ -11,19 +11,19 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         username: String(username),
       },
       include: {
-        Profile: true,
-        Comment: {
+        profile: true,
+        comments: {
           include: {
             post: true,
           },
         },
-        Post: true,
-        Star: {
+        posts: true,
+        stars: {
           include: {
             post: true,
           },
         },
-        Bookmark: {
+        bookmarks: {
           include: {
             post: true,
           },

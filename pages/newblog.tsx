@@ -1,12 +1,21 @@
+import { NextPage } from 'next';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { ChangeEventHandler, SyntheticEvent, useState } from 'react';
 import axios from '../lib/axios';
+import withAuth from '../lib/withAuth';
 
-const newblog = () => {
+const NewBlog: NextPage = () => {
+  //states
   const [blogValues, setBlogValues] = useState({
     title: '',
     body: '',
   });
+
+  //hooks
+  const router = useRouter();
+
+  //funcs
   const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setBlogValues({ ...blogValues, [e.target.name]: e.target.value });
   };
@@ -16,6 +25,11 @@ const newblog = () => {
     try {
       const res = await axios.post('/post/create', blogValues);
       alert(res.data.message);
+      setBlogValues({
+        title: '',
+        body: '',
+      });
+      router.push('/');
     } catch (err: any) {
       alert(err?.response?.data?.message);
     }
@@ -78,4 +92,4 @@ const newblog = () => {
   );
 };
 
-export default newblog;
+export default withAuth(NewBlog);

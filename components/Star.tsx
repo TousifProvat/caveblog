@@ -36,38 +36,37 @@ const Star = ({ slug }: propTypes) => {
     }
   };
 
-  //function to fetch stars count and check if user starred or not
-  const fetchStars = async () => {
-    try {
-      setLoading(true);
-      const {
-        data,
-      }: {
-        data: {
-          stars: number;
-          starred: boolean;
-        };
-      } = await axios.get(`/star/post/${slug}?user=${session?.user?.id}`);
-      setCount(data.stars);
-      setActive(data.starred);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   //csr
   useEffect(() => {
+    //function to fetch stars count and check if user starred or not
+    const fetchStars = async () => {
+      try {
+        setLoading(true);
+        const {
+          data,
+        }: {
+          data: {
+            stars: number;
+            starred: boolean;
+          };
+        } = await axios.get(`/star/post/${slug}?user=${session?.user?.id}`);
+        setCount(data.stars);
+        setActive(data.starred);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
     if (status !== 'loading') {
       fetchStars();
     }
-  }, [status]);
+  }, [status, slug, session?.user?.id]);
 
   if (loading) return <>...Loading</>;
 
   return (
-    <div className="star flex flex-col space-y-1 items-center">
+    <div className="star flex sm:flex-col space-x-1 sm:space-x-0 sm:space-y-1 items-center ">
       <div className="star-icon" onClick={() => toggleStarPost(slug)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"

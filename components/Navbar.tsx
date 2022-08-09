@@ -1,12 +1,12 @@
-import { useSession, signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import ProfileDropDown from './ProfileDropDown';
+import DropDown from './DropDown';
 
 const Navbar = () => {
   const { data: session, status } = useSession();
 
-  const [show, setShow] = useState<boolean>(false);
   return (
     <div className="w-full h-16 flex items-center justify-center bg-white shadow-sm fixed z-20 ">
       <div className="flex justify-between items-center w-full container px-3 sm:px-0">
@@ -28,10 +28,64 @@ const Navbar = () => {
           </div> */}
         </div>
         <nav className="right-side flex items-center">
-          {session && <ProfileDropDown />}
+          {session && (
+            <DropDown
+              icon={
+                <div
+                  className="relative overflow-hidden w-[40px] h-[40px] sm:w-[45px] sm:h-[45px] hover:border-blue-500 rounded-full cursor-pointer 
+                border-2 border-transparent"
+                >
+                  {session && session.user && (
+                    <Image
+                      src={String(session.user.image)}
+                      objectFit="contain"
+                      layout="fill"
+                      priority
+                      alt={String(session.user.name)}
+                    />
+                  )}
+                </div>
+              }
+              menus={[
+                <Link href={`/${session?.user?.username}`} key="1">
+                  <a>
+                    <li className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col">
+                      {session?.user?.name}
+                      <span className="text-xs pl-[3px]">
+                        {session?.user?.email}
+                      </span>
+                    </li>
+                  </a>
+                </Link>,
+                <hr className="pb-3" key="2" />,
+                <Link href={'/newblog'} key="3">
+                  <a>
+                    <li className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md">
+                      Create Post
+                    </li>
+                  </a>
+                </Link>,
+                <Link href={'/settings'} key="4">
+                  <a>
+                    <li className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md">
+                      Settings
+                    </li>
+                  </a>
+                </Link>,
+                <hr key="5" />,
+                <li
+                  className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md cursor-pointer"
+                  onClick={() => signOut()}
+                  key="6"
+                >
+                  Signout
+                </li>,
+              ]}
+            />
+          )}
           {!session && (
             <ul className="flex space-x-4 text-l items-center">
-              <li className="hidden sm:block">
+              <li>
                 <Link href="/login">
                   <a className="hover:bg-blue-200 hover:text-blue-500 px-3 py-3 rounded">
                     Login

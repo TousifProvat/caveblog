@@ -2,31 +2,60 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SyntheticEvent, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import {
+  ChangeEventHandler,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import Bookmark from '../../components/Bookmark';
 import CommentList from '../../components/CommentList';
+import DropDown from '../../components/DropDown';
 import Star from '../../components/Star';
 import axios from '../../lib/axios';
 import { commentTypes, postTypes, userTypes } from '../../types';
 import formatDate from '../../utils/formatDate';
 
-interface slugPropTypes {
+interface PropTypes {
   post: postTypes;
   comments: commentTypes[];
 }
 
-const slug = ({ post, comments }: slugPropTypes) => {
-  const { data: session } = useSession();
+const Slug: NextPage<PropTypes> = ({ post, comments }) => {
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
   const [comment, setComment] = useState<string>(''); //comment body
   const [blogComments, setBlogComments] = useState<commentTypes[]>([]);
+  const [edit, setEdit] = useState<boolean>(false);
+  const [blogValues, setBlogValues] = useState({
+    title: post?.title,
+    body: post?.body,
+  });
 
   //hooks
+  const { data: session } = useSession();
+  const router = useRouter();
+
   useEffect(() => {
+    if (!comments) return;
     setBlogComments(comments);
   }, [comments]);
 
   //functins
+  const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    setBlogValues({ ...blogValues, [e.target.name]: e.target.value });
+  };
+
+  const deleteBlog = async () => {
+    try {
+      await axios.delete(`/post/delete/${post.id}`);
+      alert('deleted successfully');
+      router.push('/');
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const addCommentLocally = (comment: commentTypes) => {
     let newComment: commentTypes = {
@@ -34,6 +63,18 @@ const slug = ({ post, comments }: slugPropTypes) => {
       user: { ...session?.user },
     };
     setBlogComments([newComment, ...blogComments]);
+  };
+
+  const onUpdate = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    try {
+      const res = await axios.put(`/post/update/${post.id}`, blogValues);
+      alert(res.data.message);
+      setEdit(false);
+      router.push(`/posts/${res.data.post.slug}`);
+    } catch (err: any) {
+      alert(err?.response?.data?.message);
+    }
   };
 
   const onSubmit = async (e: SyntheticEvent) => {
@@ -60,81 +101,138 @@ const slug = ({ post, comments }: slugPropTypes) => {
       );
     });
 
+    console.log(obj);
     return obj;
   }, [blogComments]);
 
   return (
     <div className="min-h-screen w-full flex flex-col sm:flex-row sm:justify-between relative">
       <div className="interaction-section fixed hidden sm:block sm:space-y-5 sm:left-auto sm:top-[40%] sm:translate-y-[-50%]">
-        <Star slug={post.slug} />
-        <Bookmark slug={post.slug} />
+        {post && <Star slug={post?.slug} />}
+        {post && <Bookmark slug={post?.slug} />}
       </div>
       <div className="min-h-screen blog-container w-full overflow-hidden space-y-3 sm:ml-12 md:ml-16 bg-white shadow-md sm:pb-10 rounded-b-md">
         <div className="blog-img w-full h-auto bg-gray-400"> </div>
         <div className="blog-body px-4 space-y-4 min-h-[300px]">
-          <div className="flex author space-x-3">
-            <Link href={`/${post.author.username}`}>
-              <a>
-                <div className="author-img w-12 h-12 bg-gray-400 rounded-full overflow-hidden">
-                  <Image src={post.author.image} width={48} height={48} />
-                </div>
-              </a>
-            </Link>
-            <div className="author-details flex flex-col justify-between">
-              <Link href={`/${post.author.username}`}>
+          <div className="blog-header flex justify-between">
+            <div className="author flex space-x-3">
+              <Link href={`/${post?.author?.username}`}>
                 <a>
-                  <h2 className="author-name font-semibold hover:text-blue-500 cursor-pointer">
-                    {post.author.name}
-                  </h2>
+                  <div className="author-img w-12 h-12 bg-gray-400 rounded-full overflow-hidden">
+                    {post?.author?.image && (
+                      <Image
+                        src={post.author.image}
+                        width={48}
+                        height={48}
+                        alt={post.author.name}
+                      />
+                    )}
+                  </div>
                 </a>
               </Link>
-              <span className="text-xs text-slate-500">
-                Posted on {formatDate(post.createdAt)}
-              </span>
+              <div className="author-details flex flex-col justify-between">
+                <Link href={`/${post?.author?.username}`}>
+                  <a>
+                    <h2 className="author-name font-semibold hover:text-blue-500 cursor-pointer">
+                      {post?.author?.name}
+                    </h2>
+                  </a>
+                </Link>
+                <span className="text-xs text-slate-500">
+                  Posted on {formatDate(post?.createdAt)}
+                </span>
+              </div>
             </div>
+            {post?.author.username === session?.user?.username && (
+              <DropDown
+                icon={
+                  <div className="options cursor-pointer hover:bg-blue-200 rounded-full h-8 w-8 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                      />
+                    </svg>
+                  </div>
+                }
+                menus={[
+                  <li
+                    onClick={deleteBlog}
+                    className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col cursor-pointer"
+                    key="1"
+                  >
+                    Delete Blog
+                  </li>,
+                  <li
+                    className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col cursor-pointer"
+                    onClick={() => setEdit(true)}
+                    key="2"
+                  >
+                    Edit Blog
+                  </li>,
+                ]}
+              />
+            )}
           </div>
-          <h2 className="title text-3xl font-bold">{post.title}</h2>
-          <p className="blog-content text-lg font-light">{post.body}</p>
+          {edit ? (
+            <>
+              <form onSubmit={onUpdate}>
+                <textarea
+                  onChange={onChange}
+                  value={blogValues.title}
+                  name="title"
+                  placeholder="New post title here..."
+                  maxLength={250}
+                  className="w-full text-3xl px-4 py-2 outline-none font-bold resize-none h-[100px] md:h-[100px]"
+                  required
+                />
+                <hr />
+                <textarea
+                  onChange={onChange}
+                  value={blogValues.body}
+                  name="body"
+                  placeholder="Write your post here...."
+                  className="w-full resize-none outline-none px-4 py-2 h-[400px]"
+                  maxLength={3000}
+                  required
+                />
+                <div className="buttons space-x-2">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Update
+                  </button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    onClick={() => setEdit(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </>
+          ) : (
+            <>
+              <h2 className="title text-3xl font-bold">{blogValues.title}</h2>
+              <p className="blog-content text-lg font-light">
+                {blogValues.body}
+              </p>
+            </>
+          )}
         </div>
         <div className="w-full interaction-section-small space-x-5 flex items-center justify-center pt-5 sm:pb-10 sm:hidden">
-          <div className="star flex space-x-1 items-center">
-            <div className="star-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 text-slate-500 hover:fill-yellow-400 hover:text-yellow-400 cursor-pointer"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                />
-              </svg>
-            </div>
-            <span className="text-md text-slate-400">11</span>
-          </div>
-          <div className="bookmark flex space-x-1 items-center">
-            <div className="bookmark-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 text-slate-500 hover:text-blue-500 hover:fill-blue-500 cursor-pointer"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                />
-              </svg>
-            </div>
-            <span className="text-md text-slate-400">12</span>
-          </div>
+          {post && <Star slug={post?.slug} />}
+          {post && <Bookmark slug={post?.slug} />}
         </div>
         <div className="discussion px-4 space-y-6 pb-2">
           <h2 className="section-title text-xl font-bold">
@@ -153,6 +251,7 @@ const slug = ({ post, comments }: slugPropTypes) => {
                       src={session.user.image}
                       width={40}
                       height={40}
+                      alt={session.user.name!}
                     />
                   )}
                 </div>
@@ -177,7 +276,7 @@ const slug = ({ post, comments }: slugPropTypes) => {
               )}
             </form>
           )}
-          <CommentList comments={commentsByParentId} />
+          {/* {comments && <CommentList comments={commentsByParentId} />} */}
         </div>
       </div>
     </div>
@@ -185,10 +284,13 @@ const slug = ({ post, comments }: slugPropTypes) => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const res = await fetch(
-    `http://localhost:3000/api/post/${context.params?.slug}`
-  );
-  const data = await res.json();
+  const { data, status } = await axios.get(`/post/${context.params?.slug}`);
+
+  if (status === 404) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
@@ -215,6 +317,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-slug.public = true;
-
-export default slug;
+export default Slug;

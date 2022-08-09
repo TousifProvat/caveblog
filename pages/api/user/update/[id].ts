@@ -1,7 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../../lib/prisma';
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'PUT') return res.status(405).end();
   try {
     const { id } = req.query;
@@ -12,7 +15,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         id: String(id),
       },
       include: {
-        Profile: true,
+        profile: true,
       },
     });
 
@@ -37,7 +40,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     });
 
     let profile;
-    if (!user.Profile) {
+    if (!user.profile) {
       profile = await prisma.profile.create({
         data: {
           ...profileValues,
@@ -47,7 +50,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     } else {
       profile = await prisma.profile.update({
         where: {
-          id: user.Profile.id,
+          id: user.profile.id,
         },
         data: {
           ...profileValues,

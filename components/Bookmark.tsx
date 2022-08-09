@@ -36,38 +36,38 @@ const Bookmark = ({ slug }: propTypes) => {
     }
   };
 
-  //function to fetch bookmarks count and check if user bookmarked or not
-  const fetchBookmarks = async () => {
-    try {
-      setLoading(true);
-      const {
-        data,
-      }: {
-        data: {
-          bookmarks: number;
-          bookmarked: boolean;
-        };
-      } = await axios.get(`/bookmark/post/${slug}?user=${session?.user?.id}`);
-      setCount(data.bookmarks);
-      setActive(data.bookmarked);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   //csr
   useEffect(() => {
+    //function to fetch bookmarks count and check if user bookmarked or not
+    const fetchBookmarks = async () => {
+      try {
+        setLoading(true);
+        const {
+          data,
+        }: {
+          data: {
+            bookmarks: number;
+            bookmarked: boolean;
+          };
+        } = await axios.get(`/bookmark/post/${slug}?user=${session?.user?.id}`);
+        setCount(data.bookmarks);
+        setActive(data.bookmarked);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
     if (status !== 'loading') {
       fetchBookmarks();
     }
-  }, [status]);
+    //react-hooks/exhaustive-deps
+  }, [status, slug, session?.user?.id]);
 
   if (loading) return <>...Loading</>;
 
   return (
-    <div className="bookmark flex flex-col space-y-1 items-center">
+    <div className="bookmark flex sm:flex-col space-x-1 sm:space-x-0 sm:space-y-1 items-center">
       <div className="bookmark-icon" onClick={() => toggleBookmarkPost(slug)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"

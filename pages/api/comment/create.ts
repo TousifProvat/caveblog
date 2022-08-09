@@ -2,11 +2,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import { prisma } from '../../../lib/prisma';
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'POST') return res.status(405).end();
   try {
-    //user will be replaced by req.userid
-
     const session = await getSession({ req });
 
     if (!session)
@@ -20,7 +21,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
     const postExist = await prisma.post.findUnique({
       where: {
-        id: Number(post),
+        id: post,
       },
     });
 
@@ -33,7 +34,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     if (parentId) {
       newComment = await prisma.comment.create({
         data: {
-          userId: String(session.user?.id),
+          userId: session.user?.id!,
           postId: post,
           parentId,
           body: comment,
@@ -42,7 +43,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     } else {
       newComment = await prisma.comment.create({
         data: {
-          userId: String(session.user?.id),
+          userId: session.user?.id!,
           postId: post,
           body: comment,
         },

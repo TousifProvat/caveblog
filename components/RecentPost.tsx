@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { postTypes } from '../types';
+import formatDate from '../utils/formatDate';
 
 interface PropsTypes {
   post: postTypes;
@@ -17,7 +18,9 @@ const Post = ({ post }: PropsTypes) => {
           <div className="desc text-[15px] text-black font-light">
             {post.body.slice(0, 50)}...
           </div>
-          <div className="time text-xs text-slate-500">Jun25 '21 </div>
+          <div className="time text-xs text-slate-500">
+            {formatDate(post.createdAt)}
+          </div>
         </div>
       </div>
     </Link>

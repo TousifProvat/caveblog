@@ -6,11 +6,12 @@ export interface profileTypes {
 }
 
 export interface userTypes {
+  id: string;
   username: string;
   email: string;
   name: string;
   image: string;
-  Profile: profileTypes;
+  profile: profileTypes;
 }
 
 export interface postTypes {
@@ -18,21 +19,11 @@ export interface postTypes {
   title: string;
   body: string;
   slug: string;
-  author: {
-    username: string;
-    name: string;
-    image: string;
-  };
+  author: userTypes;
   comments: commentTypes[];
   stars: starTypes[];
   bookmarks: bookmarkTypes[];
   createdAt: string;
-}
-
-export interface userTypes {
-  username: string;
-  name: string;
-  image: string;
 }
 
 export interface commentTypes {
@@ -42,7 +33,12 @@ export interface commentTypes {
   userId: number;
   createdAt: string;
   updatedAt: string;
-  user: userTypes;
+  user: {
+    username?: string | null;
+    email?: string | null;
+    name?: string | null;
+    image?: string | null;
+  } | null;
   post: postTypes;
   parentId: number;
 }

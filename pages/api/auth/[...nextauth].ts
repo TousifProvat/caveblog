@@ -1,16 +1,26 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-// import bcrypt from 'bcrypt';
+import { nanoid } from 'nanoid';
 //utils
 import { prisma } from '../../../lib/prisma';
+
+//cretes a random username
+prisma.$use(async (params, next) => {
+  if (params.model === 'User' && params.action === 'create') {
+    params.args.data.username = nanoid(5);
+  }
+  return next(params);
+});
+
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
 
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: GOOGLE_CLIENT_ID!,
+      clientSecret: GOOGLE_CLIENT_SECRET!,
     }),
     // CredentialsProvider({
     //   name: 'Credentials',

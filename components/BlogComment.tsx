@@ -9,7 +9,7 @@ import CommentReply from './CommentReply';
 
 interface propTypes {
   comment: commentTypes;
-  replies: undefined | commentTypes[];
+  replies?: commentTypes[];
 }
 
 const BlogComment = ({ comment, replies }: propTypes) => {
@@ -23,7 +23,7 @@ const BlogComment = ({ comment, replies }: propTypes) => {
 
   //hooks
   useEffect(() => {
-    if (replies === undefined) return;
+    if (!replies) return;
     setReplies(replies);
   }, [replies]);
 
@@ -56,10 +56,17 @@ const BlogComment = ({ comment, replies }: propTypes) => {
   return (
     <div className="comment-box flex flex-col space-y-2">
       <div className="comment flex space-x-2">
-        <Link href={`/${comment?.user.username}`}>
+        <Link href={`/${comment?.user?.username}`}>
           <a>
             <div className="profile-avatar w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
-              <Image src={comment?.user.image} width={40} height={40} />
+              {comment.user?.image && (
+                <Image
+                  src={comment?.user?.image}
+                  width={40}
+                  height={40}
+                  alt={comment.user.name!}
+                />
+              )}
             </div>
           </a>
         </Link>{' '}
@@ -69,7 +76,7 @@ const BlogComment = ({ comment, replies }: propTypes) => {
         >
           <h2 className="comment-author-name font-semibold text-lg flex items-center">
             <Link href={`/${comment?.user?.username}`}>
-              <a>{comment?.user.name}</a>
+              <a>{comment?.user?.name}</a>
             </Link>
             <span className="pl-4 text-xs font-light text-slate-500">
               {formatDate(comment?.createdAt)}
@@ -110,7 +117,12 @@ const BlogComment = ({ comment, replies }: propTypes) => {
           <div className="comment-box flex space-x-2 ml-[50px]">
             <div className="profile-avatar w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
               {session?.user?.image && (
-                <Image src={session?.user?.image} width={40} height={40} />
+                <Image
+                  src={session.user.image}
+                  width={40}
+                  height={40}
+                  alt={session.user.name!}
+                />
               )}
             </div>
             <textarea
@@ -144,7 +156,7 @@ const BlogComment = ({ comment, replies }: propTypes) => {
         </form>
       )}
       <div className="comment-container flex flex-col space-y-2">
-        {Replies?.map((reply: commentTypes, index: number) => (
+        {Replies.map((reply: commentTypes, index: number) => (
           <CommentReply key={index} reply={reply} />
         ))}
       </div>

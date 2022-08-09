@@ -2,8 +2,9 @@ import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/react';
 import { ChangeEventHandler, SyntheticEvent, useState } from 'react';
 import { useRouter } from 'next/router';
+import { NextPage } from 'next';
 
-const login = () => {
+const Login: NextPage = () => {
   const [formValues, setFormValues] = useState({ email: '', password: '' });
 
   const { data: session, status } = useSession();
@@ -102,6 +103,5 @@ const login = () => {
   );
 };
 
-login.public = true;
 
-export default login;
+export default Login;

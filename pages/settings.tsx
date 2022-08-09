@@ -1,7 +1,9 @@
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import { getSession } from 'next-auth/react';
 import React, { ChangeEventHandler, SyntheticEvent, useState } from 'react';
 import axios from '../lib/axios';
+import withAuth from '../lib/withAuth';
+import { profileTypes, userTypes } from '../types';
 
 interface stateProps {
   name: string;
@@ -9,36 +11,22 @@ interface stateProps {
   username: string;
 }
 
-interface profileProps {
-  headline: string;
-  bio: string;
-  website: string;
-  location: string;
+interface PropTypes {
+  user: userTypes;
 }
 
-interface propTypes {
-  user: {
-    id: string;
-    username: string;
-    email: string;
-    name: string;
-    image: string;
-    Profile: profileProps;
-  };
-}
-
-const settings = ({ user }: propTypes) => {
+const Settings: NextPage<PropTypes> = ({ user }) => {
   const [formValues, setFormValues] = useState<stateProps>({
     name: user.name || '',
     email: user.email || '',
     username: user.username || '',
   });
 
-  const [profileValues, setProfileValues] = useState({
-    headline: user.Profile?.headline || '',
-    bio: user.Profile?.bio || '',
-    website: user.Profile?.website || '',
-    location: user.Profile?.location || '',
+  const [profileValues, setProfileValues] = useState<profileTypes>({
+    headline: user.profile?.headline || '',
+    bio: user.profile?.bio || '',
+    website: user.profile?.website || '',
+    location: user.profile?.location || '',
   });
 
   const onChange: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -183,10 +171,17 @@ const settings = ({ user }: propTypes) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
-  const res = await fetch(
-    `http://localhost:3000/api/user/${session?.user?.username}`
-  );
-  const data = await res.json();
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+  const { data, status } = await axios.get(`/user/${session?.user?.username}`);
+
   return {
     props: {
       user: data.user,
@@ -194,4 +189,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default settings;
+export default withAuth(Settings);

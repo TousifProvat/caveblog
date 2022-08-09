@@ -1,6 +1,4 @@
-import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
-import axios from '../lib/axios';
+import { GetServerSideProps, NextPage } from 'next';
 
 //component
 import Post from '../components/RecentPost';
@@ -16,7 +14,7 @@ import {
 } from '../types';
 import RecentComment from '../components/RecentComment';
 
-interface propTypes {
+interface PropTypes {
   user: userTypes;
   comments: commentTypes[];
   posts: postTypes[];
@@ -24,7 +22,13 @@ interface propTypes {
   bookmarks: bookmarkTypes[];
 }
 
-const username = ({ user, comments, posts, stars, bookmarks }: propTypes) => {
+const Username: NextPage<PropTypes> = ({
+  user,
+  comments,
+  posts,
+  stars,
+  bookmarks,
+}) => {
   const { data: session, status } = useSession();
 
   return (
@@ -41,6 +45,7 @@ const username = ({ user, comments, posts, stars, bookmarks }: propTypes) => {
               src={user?.image}
               layout="fill"
               objectFit="contain"
+              alt={user.name}
             />
           </div>
 
@@ -60,19 +65,19 @@ const username = ({ user, comments, posts, stars, bookmarks }: propTypes) => {
             <h2 className="name font-bold text-2xl sm:text-3xl flex flex-col">
               {user?.name}
               <span className="text-xs font-light">
-                {user?.Profile?.headline}
+                {user?.profile?.headline}
               </span>
             </h2>
             <p className="bio text-lg">
-              {user?.Profile?.bio ? user.Profile.bio : '404 bio not found'}
+              {user?.profile?.bio ? user.profile.bio : '404 bio not found'}
             </p>
             <div className="more-details text-center flex space-x-2 justify-center items-center text-slate-400">
-              <p className="location text-sm">{user?.Profile?.location}</p>
+              <p className="location text-sm">{user?.profile?.location}</p>
               <p className="website text-sm">
-                {user?.Profile?.website && (
-                  <Link href={user.Profile.website}>
+                {user?.profile?.website && (
+                  <Link href={user.profile.website}>
                     <a target="_blank" className="hover:text-blue-500">
-                      {user.Profile.website}
+                      {user.profile.website}
                     </a>
                   </Link>
                 )}
@@ -144,12 +149,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user: data.user,
-      comments: data.user.Comment,
-      posts: data.user.Post,
-      stars: data.user.Star,
-      bookmarks: data.user.Bookmark,
+      comments: data.user.comments,
+      posts: data.user.posts,
+      stars: data.user.stars,
+      bookmarks: data.user.bookmarks,
     },
   };
 };
 
-export default username;
+export default Username;

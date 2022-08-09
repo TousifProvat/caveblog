@@ -2,7 +2,10 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import { prisma } from '../../../lib/prisma';
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'POST') return res.status(405).end();
   try {
     const session = await getSession({ req });
@@ -16,7 +19,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
     const postExist = await prisma.post.findUnique({
       where: {
-        slug: String(slug),
+        slug: slug,
       },
     });
 

@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
-const register: NextPage = () => {
+const Register: NextPage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -39,6 +39,4 @@ const register: NextPage = () => {
   );
 };
 
-register.public = true;
-
-export default register;
+export default Register;
