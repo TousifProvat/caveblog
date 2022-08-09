@@ -29,6 +29,12 @@ export interface postTypes {
   createdAt: string;
 }
 
+export interface userTypes {
+  username: string;
+  name: string;
+  image: string;
+}
+
 export interface commentTypes {
   id: number;
   body: string;
@@ -36,11 +42,7 @@ export interface commentTypes {
   userId: number;
   createdAt: string;
   updatedAt: string;
-  user: {
-    username: string;
-    name: string;
-    image: string;
-  };
+  user: userTypes;
   post: postTypes;
   parentId: number;
 }

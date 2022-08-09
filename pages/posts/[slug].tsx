@@ -2,12 +2,12 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SyntheticEvent, useMemo, useState } from 'react';
+import { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import Bookmark from '../../components/Bookmark';
 import CommentList from '../../components/CommentList';
 import Star from '../../components/Star';
 import axios from '../../lib/axios';
-import { commentTypes, postTypes } from '../../types';
+import { commentTypes, postTypes, userTypes } from '../../types';
 import formatDate from '../../utils/formatDate';
 
 interface slugPropTypes {
@@ -17,12 +17,24 @@ interface slugPropTypes {
 
 const slug = ({ post, comments }: slugPropTypes) => {
   const { data: session } = useSession();
-
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
-
   const [comment, setComment] = useState<string>(''); //comment body
+  const [blogComments, setBlogComments] = useState<commentTypes[]>([]);
 
-  // calls the create comment api
+  //hooks
+  useEffect(() => {
+    setBlogComments(comments);
+  }, [comments]);
+
+  //functins
+
+  const addCommentLocally = (comment: commentTypes) => {
+    let newComment: commentTypes = {
+      ...comment,
+      user: { ...session?.user },
+    };
+    setBlogComments([newComment, ...blogComments]);
+  };
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -31,18 +43,17 @@ const slug = ({ post, comments }: slugPropTypes) => {
         comment,
         post: post.id,
       });
+      addCommentLocally(data.comment);
       setComment('');
       setBoxFocus(false);
-      alert(data.message);
     } catch (err: any) {
       alert(err.response.data.message);
     }
   };
 
-  //
   const commentsByParentId = useMemo(() => {
     const obj: any = {};
-    comments.forEach((comment) => {
+    blogComments.forEach((comment) => {
       obj[comment.parentId === null ? 'parent' : comment.parentId] ||= [];
       obj[comment.parentId === null ? 'parent' : comment.parentId].push(
         comment
@@ -50,7 +61,7 @@ const slug = ({ post, comments }: slugPropTypes) => {
     });
 
     return obj;
-  }, [comments]);
+  }, [blogComments]);
 
   return (
     <div className="min-h-screen w-full flex flex-col sm:flex-row sm:justify-between relative">

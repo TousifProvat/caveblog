@@ -9,21 +9,32 @@ import CommentReply from './CommentReply';
 
 interface propTypes {
   comment: commentTypes;
-  replies: any;
+  replies: undefined | commentTypes[];
 }
 
 const BlogComment = ({ comment, replies }: propTypes) => {
+  //session
+  const { data: session } = useSession();
+  //state
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
   const [reply, setReply] = useState<string>('');
   const [show, setShow] = useState<boolean>(false);
   const [Replies, setReplies] = useState<commentTypes[]>([]);
 
+  //hooks
   useEffect(() => {
     if (replies === undefined) return;
     setReplies(replies);
   }, [replies]);
 
-  const { data: session } = useSession();
+  //func
+  const addRepliesLocally = (comment: commentTypes) => {
+    let newReply: commentTypes = {
+      ...comment,
+      user: { ...session?.user },
+    };
+    setReplies([newReply, ...Replies]);
+  };
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -33,9 +44,9 @@ const BlogComment = ({ comment, replies }: propTypes) => {
         post: comment.postId,
         parentId: comment.id,
       });
+      addRepliesLocally(data.comment);
       setReply('');
       setBoxFocus(false);
-      alert(data.message);
     } catch (err: any) {
       console.log(err);
       alert(err.response.data.message);
@@ -133,10 +144,9 @@ const BlogComment = ({ comment, replies }: propTypes) => {
         </form>
       )}
       <div className="comment-container flex flex-col space-y-2">
-        {Replies?.length > 0 &&
-          replies.map((reply: commentTypes, index: number) => (
-            <CommentReply key={index} reply={reply} />
-          ))}
+        {Replies?.map((reply: commentTypes, index: number) => (
+          <CommentReply key={index} reply={reply} />
+        ))}
       </div>
     </div>
   );

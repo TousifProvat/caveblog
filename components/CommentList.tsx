@@ -8,7 +8,8 @@ import BlogComment from './BlogComment';
 
 interface PropTypes {
   comments: {
-    parent: commentTypes[];
+    parent: commentTypes[] | undefined;
+    [key: string]: commentTypes[] | undefined;
   };
 }
 

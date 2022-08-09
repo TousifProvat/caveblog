@@ -1,25 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { commentTypes } from '../types';
 import formatDate from '../utils/formatDate';
 
-interface Reply {
-  id: number;
-  body: string;
-  postId: number;
-  userId: number;
-  commentId: number;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    username: string;
-    name: string;
-    image: string;
-  };
-}
-
 interface propTypes {
-  reply: Reply;
+  reply: commentTypes;
 }
 
 const CommentReply = ({ reply }: propTypes) => {
