@@ -1,69 +1,57 @@
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import useSWR from 'swr';
 import axios from '../lib/axios';
 
-interface propTypes {
+interface PropTypes {
   slug: string;
 }
 
-const Star = ({ slug }: propTypes) => {
+const Star: FunctionComponent<PropTypes> = ({ slug }) => {
   const { data: session, status } = useSession();
-  const [active, setActive] = useState(false);
-  const [count, setCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const { data, error, mutate } = useSWR<{
+    starred: boolean;
+    stars: number;
+  }>(`/star/post/${slug}?user=${session?.user.id}`);
 
   //function to star post
-
   const toggleStarPost = async (slug: string) => {
     try {
-      if (active) {
+      if (data?.starred) {
         await axios.delete('/star/delete', {
           data: {
             slug,
           },
         });
-        count > 0 ? setCount(count - 1) : setCount(0);
-        setActive(false);
+        mutate(
+          {
+            ...data,
+            starred: false,
+            stars: data.stars > 0 ? data.stars - 1 : 0,
+          },
+          false
+        );
       } else {
         await axios.post('/star/create', {
           slug,
         });
-        setCount(count + 1);
-        setActive(true);
+        mutate(
+          {
+            ...data,
+            starred: true,
+            stars: data!.stars + 1,
+          },
+          false
+        );
       }
     } catch (err: any) {
       alert(err.response.data.message);
     }
   };
 
-  //csr
-  useEffect(() => {
-    //function to fetch stars count and check if user starred or not
-    const fetchStars = async () => {
-      try {
-        setLoading(true);
-        const {
-          data,
-        }: {
-          data: {
-            stars: number;
-            starred: boolean;
-          };
-        } = await axios.get(`/star/post/${slug}?user=${session?.user?.id}`);
-        setCount(data.stars);
-        setActive(data.starred);
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (status !== 'loading') {
-      fetchStars();
-    }
-  }, [status, slug, session?.user?.id]);
+  if (!data && !error) return <>...Loading</>;
 
-  if (loading) return <>...Loading</>;
+  if (error) return <>Something went wrong</>;
 
   return (
     <div className="star flex sm:flex-col space-x-1 sm:space-x-0 sm:space-y-1 items-center ">
@@ -71,7 +59,7 @@ const Star = ({ slug }: propTypes) => {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={`h-7 w-7 text-slate-500 hover:fill-yellow-400 hover:text-yellow-400 cursor-pointer ${
-            active && 'text-yellow-400 fill-yellow-400'
+            data?.starred && 'text-yellow-400 fill-yellow-400'
           }`}
           fill="none"
           viewBox="0 0 24 24"
@@ -85,7 +73,7 @@ const Star = ({ slug }: propTypes) => {
           />
         </svg>
       </div>
-      <span className="text-md text-slate-400">{count}</span>
+      <span className="text-md text-slate-400">{data?.stars}</span>
     </div>
   );
 };

@@ -1,70 +1,59 @@
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react';
+import { off } from 'process';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import useSWR from 'swr';
 import axios from '../lib/axios';
 
-interface propTypes {
+interface PropTypes {
   slug: string;
 }
 
-const Bookmark = ({ slug }: propTypes) => {
-  const { data: session, status } = useSession();
-  const [active, setActive] = useState(false);
-  const [count, setCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
+  const { data: session } = useSession();
+  const { data, error, mutate } = useSWR<{
+    bookmarked: boolean;
+    bookmarks: number;
+  }>(`/bookmark/post/${slug}?user=${session?.user.id}`);
 
   //function to bookmark post
-
   const toggleBookmarkPost = async (slug: string) => {
     try {
-      if (active) {
+      if (data?.bookmarked) {
         await axios.delete('/bookmark/delete', {
           data: {
             slug,
           },
         });
-        count > 0 ? setCount(count - 1) : setCount(0);
-        setActive(false);
+
+        mutate(
+          {
+            ...data,
+            bookmarked: true,
+            bookmarks: data.bookmarks > 0 ? data.bookmarks - 1 : 0,
+          },
+          false
+        );
       } else {
         await axios.post('/bookmark/create', {
           slug,
         });
-        setCount(count + 1);
-        setActive(true);
+        mutate(
+          {
+            ...data,
+            bookmarked: false,
+            bookmarks: data!.bookmarks + 1,
+          },
+          false
+        );
       }
     } catch (err: any) {
       alert(err.response.data.message);
     }
   };
 
-  //csr
-  useEffect(() => {
-    //function to fetch bookmarks count and check if user bookmarked or not
-    const fetchBookmarks = async () => {
-      try {
-        setLoading(true);
-        const {
-          data,
-        }: {
-          data: {
-            bookmarks: number;
-            bookmarked: boolean;
-          };
-        } = await axios.get(`/bookmark/post/${slug}?user=${session?.user?.id}`);
-        setCount(data.bookmarks);
-        setActive(data.bookmarked);
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (status !== 'loading') {
-      fetchBookmarks();
-    }
-    //react-hooks/exhaustive-deps
-  }, [status, slug, session?.user?.id]);
+  if (!data && !error) return <>...Loading</>;
 
-  if (loading) return <>...Loading</>;
+  if (error) return <>Something went wrong</>;
 
   return (
     <div className="bookmark flex sm:flex-col space-x-1 sm:space-x-0 sm:space-y-1 items-center">
@@ -72,7 +61,7 @@ const Bookmark = ({ slug }: propTypes) => {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={`h-7 w-7 text-slate-500 hover:text-blue-500 hover:fill-blue-500 cursor-pointer ${
-            active && 'text-blue-500 fill-blue-500'
+            data?.bookmarked && 'text-blue-500 fill-blue-500'
           }`}
           fill="none"
           viewBox="0 0 24 24"
@@ -86,7 +75,7 @@ const Bookmark = ({ slug }: propTypes) => {
           />
         </svg>
       </div>
-      <span className="text-md text-slate-400">{count}</span>
+      <span className="text-md text-slate-400">{data?.bookmarks}</span>
     </div>
   );
 };
