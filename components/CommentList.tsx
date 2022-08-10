@@ -1,8 +1,4 @@
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
-import axios from '../lib/axios';
+import React, { FunctionComponent } from 'react';
 import { commentTypes } from '../types';
 import BlogComment from './BlogComment';
 
@@ -13,7 +9,7 @@ interface PropTypes {
   };
 }
 
-const CommentList = ({ comments }: PropTypes) => {
+const CommentList: FunctionComponent<PropTypes> = ({ comments }) => {
   return (
     <div className="comment-container flex flex-col space-y-5">
       {comments['parent']?.map((comment, index) => (

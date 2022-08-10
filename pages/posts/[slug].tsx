@@ -3,30 +3,24 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import {
-  ChangeEventHandler,
-  SyntheticEvent,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { ChangeEventHandler, SyntheticEvent, useMemo, useState } from 'react';
+import useSWR from 'swr';
 import Bookmark from '../../components/Bookmark';
 import CommentList from '../../components/CommentList';
 import DropDown from '../../components/DropDown';
 import Star from '../../components/Star';
 import axios from '../../lib/axios';
-import { commentTypes, postTypes, userTypes } from '../../types';
+import { commentTypes, postTypes } from '../../types';
 import formatDate from '../../utils/formatDate';
 
 interface PropTypes {
   post: postTypes;
-  comments: commentTypes[];
 }
 
-const Slug: NextPage<PropTypes> = ({ post, comments }) => {
+const Slug: NextPage<PropTypes> = ({ post }) => {
+  //states
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
   const [comment, setComment] = useState<string>(''); //comment body
-  const [blogComments, setBlogComments] = useState<commentTypes[]>([]);
   const [edit, setEdit] = useState<boolean>(false);
   const [blogValues, setBlogValues] = useState({
     title: post?.title,
@@ -36,17 +30,15 @@ const Slug: NextPage<PropTypes> = ({ post, comments }) => {
   //hooks
   const { data: session } = useSession();
   const router = useRouter();
+  const { data, error, mutate } = useSWR<{ comments: commentTypes[] }>(
+    `/comment/post/${router.query.slug}`
+  );
 
-  useEffect(() => {
-    if (!comments) return;
-    setBlogComments(comments);
-  }, [comments]);
-
-  //functins
   const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setBlogValues({ ...blogValues, [e.target.name]: e.target.value });
   };
 
+  // delete post
   const deleteBlog = async () => {
     try {
       await axios.delete(`/post/delete/${post.id}`);
@@ -57,14 +49,7 @@ const Slug: NextPage<PropTypes> = ({ post, comments }) => {
     }
   };
 
-  const addCommentLocally = (comment: commentTypes) => {
-    let newComment: commentTypes = {
-      ...comment,
-      user: { ...session?.user },
-    };
-    setBlogComments([newComment, ...blogComments]);
-  };
-
+  //update post
   const onUpdate = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
@@ -75,6 +60,15 @@ const Slug: NextPage<PropTypes> = ({ post, comments }) => {
     } catch (err: any) {
       alert(err?.response?.data?.message);
     }
+  };
+
+  // add comment
+  const addCommentLocally = (comment: commentTypes) => {
+    let newComment = {
+      ...comment,
+      user: { ...session?.user },
+    };
+    // mutate((_data) => [, {}], false);
   };
 
   const onSubmit = async (e: SyntheticEvent) => {
@@ -94,16 +88,14 @@ const Slug: NextPage<PropTypes> = ({ post, comments }) => {
 
   const commentsByParentId = useMemo(() => {
     const obj: any = {};
-    blogComments.forEach((comment) => {
+    data?.comments.forEach((comment: commentTypes) => {
       obj[comment.parentId === null ? 'parent' : comment.parentId] ||= [];
       obj[comment.parentId === null ? 'parent' : comment.parentId].push(
         comment
       );
     });
-
-    console.log(obj);
     return obj;
-  }, [blogComments]);
+  }, [data?.comments]);
 
   return (
     <div className="min-h-screen w-full flex flex-col sm:flex-row sm:justify-between relative">
@@ -236,7 +228,7 @@ const Slug: NextPage<PropTypes> = ({ post, comments }) => {
         </div>
         <div className="discussion px-4 space-y-6 pb-2">
           <h2 className="section-title text-xl font-bold">
-            Discussion ({comments?.length})
+            Discussion ({data?.comments.length || 0})
           </h2>
           {session && (
             <form
@@ -276,7 +268,7 @@ const Slug: NextPage<PropTypes> = ({ post, comments }) => {
               )}
             </form>
           )}
-          {/* {comments && <CommentList comments={commentsByParentId} />} */}
+          {data?.comments && <CommentList comments={commentsByParentId} />}
         </div>
       </div>
     </div>
@@ -295,7 +287,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
   return {
     props: {
       post: data.post,
-      comments: data.post.comments,
     },
     revalidate: 10,
   };
@@ -304,7 +295,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 export const getStaticPaths: GetStaticPaths = async () => {
   const { data } = await axios.get('/post');
 
-  const paths = data.posts.map((post: any) => ({
+  const paths = data.posts.map((post: postTypes) => ({
     params: {
       username: post.author.username,
       slug: post.slug,
