@@ -28,7 +28,7 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
         mutate(
           {
             ...data,
-            bookmarked: true,
+            bookmarked: false,
             bookmarks: data.bookmarks > 0 ? data.bookmarks - 1 : 0,
           },
           false
@@ -40,7 +40,7 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
         mutate(
           {
             ...data,
-            bookmarked: false,
+            bookmarked: true,
             bookmarks: data!.bookmarks + 1,
           },
           false
