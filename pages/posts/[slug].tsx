@@ -281,10 +281,38 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const res = await fetch(`${server}/post/${params!.slug}`);
-  const data = await res.json();
+  const post = await prisma.post.findUnique({
+    where: {
+      slug: String(params!.slug),
+    },
+    include: {
+      comments: {
+        include: {
+          user: {
+            select: {
+              username: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      author: {
+        select: {
+          username: true,
+          name: true,
+          image: true,
+        },
+      },
+      stars: true,
+      bookmarks: true,
+    },
+  });
 
-  if (!data) {
+  if (!post) {
     return {
       notFound: true,
     };
@@ -292,7 +320,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   return {
     props: {
-      post: data.post,
+      post: JSON.parse(JSON.stringify(post)),
     },
     revalidate: 10,
   };
