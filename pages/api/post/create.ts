@@ -43,8 +43,6 @@ export default async function handler(
       slug += nanoid(5);
     }
 
-    console.log(slug);
-
     const newPost = await prisma.post.create({
       data: {
         authorId: String(session.user?.id),

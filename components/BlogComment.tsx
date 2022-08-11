@@ -27,24 +27,29 @@ const BlogComment = ({ comment, replies }: propTypes) => {
 
   //func
   //basically its working like adding parent comment but with parent id
-  const addRepliesLocally = (comment: commentTypes) => {
-    let newReply: commentTypes = {
-      ...comment,
+  const addRepliesLocally = () => {
+    let newComment = {
+      body: reply,
+      createdAt: Date.now(),
+      parentId: null,
+      postId: comment.postId,
+      updatedAt: Date.now(),
+      userId: session?.user.id,
       user: { ...session?.user },
     };
-    mutate({ comments: [newReply, ...comments] }, false);
+    mutate({ comments: [newComment, ...comments] }, false);
   };
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
       setShow(false);
-      const { data } = await axios.post('/comment/create', {
-        comment: reply,
+      await axios.post('/comment/create', {
+        message: reply,
         post: comment.postId,
         parentId: comment.id,
       });
-      addRepliesLocally(data.comment);
+      addRepliesLocally();
       setReply('');
       setBoxFocus(false);
     } catch (err: any) {

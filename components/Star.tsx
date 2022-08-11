@@ -49,10 +49,6 @@ const Star: FunctionComponent<PropTypes> = ({ slug }) => {
     }
   };
 
-  if (!data && !error) return <>...Loading</>;
-
-  if (error) return <>Something went wrong</>;
-
   return (
     <div className="star flex sm:flex-col space-x-1 sm:space-x-0 sm:space-y-1 items-center ">
       <div className="star-icon" onClick={() => toggleStarPost(slug)}>
@@ -73,7 +69,13 @@ const Star: FunctionComponent<PropTypes> = ({ slug }) => {
           />
         </svg>
       </div>
-      <span className="text-md text-slate-400">{data?.stars}</span>
+      {error && (
+        <span className="text-red-500 px-1 bg-red-200 rounded-sm">!</span>
+      )}
+      {!data && !error && (
+        <span className="p-[10px] bg-gray-200 rounded-sm"></span>
+      )}
+      {data && <span className="text-md text-slate-400">{data.stars}</span>}
     </div>
   );
 };

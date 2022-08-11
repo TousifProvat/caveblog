@@ -33,7 +33,7 @@ interface PropTypes {
 const Slug: NextPage<PropTypes> = ({ post }) => {
   // states
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
-  const [comment, setComment] = useState<string>(''); //comment body
+  const [message, setMessage] = useState<string>(''); //comment body
   const [edit, setEdit] = useState<boolean>(false);
   const [blogValues, setBlogValues] = useState({
     title: post?.title,
@@ -79,9 +79,14 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   };
 
   // add comment
-  const addCommentLocally = (comment: commentTypes) => {
+  const addCommentLocally = () => {
     let newComment = {
-      ...comment,
+      body: message,
+      createdAt: Date.now(),
+      parentId: null,
+      postId: post.id,
+      updatedAt: Date.now(),
+      userId: session?.user.id,
       user: { ...session?.user },
     };
     mutate({ comments: [newComment, ...comments] }, false);
@@ -90,12 +95,12 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post('/comment/create', {
-        comment,
+      await axios.post('/comment/create', {
+        message,
         post: post.id,
       });
-      addCommentLocally(data.comment);
-      setComment('');
+      addCommentLocally();
+      setMessage('');
       setBoxFocus(false);
     } catch (err: any) {
       alert(err.response.data.message);
@@ -258,8 +263,8 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
                     boxFocus ? '36' : '20'
                   } border-[1px] rounded-md border-gray-300 outline-none focus:border-blue-500 px-2 py-1 placeholder:font-light resize-y min-h-[100px]`}
                   onFocus={() => setBoxFocus(true)}
-                  onChange={(e) => setComment(e.target.value)}
-                  value={comment}
+                  onChange={(e) => setMessage(e.target.value)}
+                  value={message}
                   required
                 ></textarea>
               </div>
@@ -286,20 +291,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       slug: String(params!.slug),
     },
     include: {
-      comments: {
-        include: {
-          user: {
-            select: {
-              username: true,
-              name: true,
-              image: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      },
       author: {
         select: {
           username: true,

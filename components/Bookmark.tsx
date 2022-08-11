@@ -27,7 +27,6 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
 
         mutate(
           {
-            ...data,
             bookmarked: false,
             bookmarks: data.bookmarks > 0 ? data.bookmarks - 1 : 0,
           },
@@ -39,7 +38,6 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
         });
         mutate(
           {
-            ...data,
             bookmarked: true,
             bookmarks: data!.bookmarks + 1,
           },
@@ -50,10 +48,6 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
       alert(err.response.data.message);
     }
   };
-
-  if (!data && !error) return <>...Loading</>;
-
-  if (error) return <>Something went wrong</>;
 
   return (
     <div className="bookmark flex sm:flex-col space-x-1 sm:space-x-0 sm:space-y-1 items-center">
@@ -75,7 +69,13 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
           />
         </svg>
       </div>
-      <span className="text-md text-slate-400">{data?.bookmarks}</span>
+      {error && (
+        <span className="text-red-500 px-1 bg-red-200 rounded-sm">!</span>
+      )}
+      {!data && !error && (
+        <span className="p-[10px] bg-gray-200 rounded-sm"></span>
+      )}
+      {data && <span className="text-md text-slate-400">{data.bookmarks}</span>}
     </div>
   );
 };

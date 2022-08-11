@@ -15,7 +15,7 @@ export default async function handler(
         message: 'Unauthorized Access',
       });
 
-    const { post, comment, parentId = null } = req.body;
+    const { post, message, parentId = null } = req.body;
 
     if (!post) return res.status(400).json({ message: 'Invalid request' });
 
@@ -34,18 +34,38 @@ export default async function handler(
     if (parentId) {
       newComment = await prisma.comment.create({
         data: {
-          userId: session.user?.id!,
-          postId: post,
-          parentId,
-          body: comment,
+          user: {
+            connect: {
+              id: session.user?.id!,
+            },
+          },
+          post: {
+            connect: {
+              id: post,
+            },
+          },
+          parent: {
+            connect: {
+              id: parentId,
+            },
+          },
+          body: message,
         },
       });
     } else {
       newComment = await prisma.comment.create({
         data: {
-          userId: session.user?.id!,
-          postId: post,
-          body: comment,
+          user: {
+            connect: {
+              id: session.user?.id!,
+            },
+          },
+          post: {
+            connect: {
+              id: post,
+            },
+          },
+          body: message,
         },
       });
     }
