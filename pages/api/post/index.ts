@@ -16,7 +16,6 @@ export default async function handler(
             image: true,
           },
         },
-
         stars: {
           select: {
             id: true,

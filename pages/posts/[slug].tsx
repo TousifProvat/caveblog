@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEventHandler, SyntheticEvent, useMemo, useState } from 'react';
 import { server } from '../../config';
+import { prisma } from '../../lib/prisma';
 
 //components
 import Bookmark from '../../components/Bookmark';
@@ -279,8 +280,8 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async (context) => {
-  const res = await fetch(`${server}/post/${context.params?.slug}`);
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const res = await fetch(`${server}/post/${params!.slug}`);
   const data = await res.json();
 
   if (!data) {
@@ -298,8 +299,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const res = await fetch(`${server}/post`);
-  const data = await res.json();
+  // const posts = await prisma.post.findMany();
+
+  const data = await fetch(`${server}/post`).then((res) => res.json());
 
   const paths = data.posts.map((post: postTypes) => ({
     params: {
