@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import axios from '../lib/axios';
-import commentsByParentId from '../lib/commentsByParent';
-import getComments from '../lib/getComments';
+import useComments from '../lib/getComments';
 import { commentTypes } from '../types';
 import formatDate from '../utils/formatDate';
 import CommentReply from './CommentReply';
@@ -17,7 +16,7 @@ interface propTypes {
 
 const BlogComment = ({ comment, replies }: propTypes) => {
   const router = useRouter();
-  const { comments, mutate } = getComments(String(router.query.slug));
+  const { comments, mutate } = useComments(String(router.query.slug));
 
   //session
   const { data: session } = useSession();

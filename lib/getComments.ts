@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 
-const getComments = (slug: string) => {
+const useComments = (slug: string) => {
   const { data, error, mutate } = useSWR(`/comment/post/${slug}`);
 
   return {
@@ -11,4 +11,4 @@ const getComments = (slug: string) => {
   };
 };
 
-export default getComments;
+export default useComments;

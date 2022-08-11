@@ -5,6 +5,11 @@ const nextConfig = {
   images: {
     domains: ['lh3.googleusercontent.com'],
   },
+  experimental: {
+    images: {
+      unoptimized: true,
+    },
+  },
 };
 
 module.exports = nextConfig;

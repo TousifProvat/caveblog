@@ -19,7 +19,7 @@ const Home: NextPage<PropTypes> = ({ posts }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const { data } = await axios.get('/post');
 
   return {

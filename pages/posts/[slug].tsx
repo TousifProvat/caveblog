@@ -4,30 +4,33 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEventHandler, SyntheticEvent, useMemo, useState } from 'react';
+import { server } from '../../config';
 
 //components
 import Bookmark from '../../components/Bookmark';
+import Star from '../../components/Star';
 import CommentList from '../../components/CommentList';
 import DropDown from '../../components/DropDown';
-import Star from '../../components/Star';
 
 //libs
 import axios from '../../lib/axios';
 import commentsByParentId from '../../lib/commentsByParent';
-import getComments from '../../lib/getComments';
+import useComments from '../../lib/getComments';
 
-//types
+// //types
 import { commentTypes, postTypes } from '../../types';
 
-//util
+// //util
 import formatDate from '../../utils/formatDate';
+import axiosInstance from '../../lib/axios';
+import { fetchData } from 'next-auth/client/_utils';
 
 interface PropTypes {
   post: postTypes;
 }
 
 const Slug: NextPage<PropTypes> = ({ post }) => {
-  //states
+  // states
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
   const [comment, setComment] = useState<string>(''); //comment body
   const [edit, setEdit] = useState<boolean>(false);
@@ -39,7 +42,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   //hooks
   const { data: session } = useSession();
   const router = useRouter();
-  const { comments, error, mutate } = getComments(post.slug);
+  const { comments, error, mutate } = useComments(String(router.query.slug));
 
   const nestedComments = useMemo(
     () => commentsByParentId(comments),
@@ -277,9 +280,10 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const { data, status } = await axios.get(`/post/${context.params?.slug}`);
+  const res = await fetch(`${server}/post/${context.params?.slug}`);
+  const data = await res.json();
 
-  if (status === 404) {
+  if (!data) {
     return {
       notFound: true,
     };
@@ -294,17 +298,17 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const { data } = await axios.get('/post');
+  const res = await fetch(`${server}/post`);
+  const data = await res.json();
 
   const paths = data.posts.map((post: postTypes) => ({
     params: {
-      username: post.author.username,
-      slug: post.slug,
+      slug: post.slug.toString(),
     },
   }));
 
   return {
-    paths,
+    paths: paths,
     fallback: true,
   };
 };
