@@ -1,6 +1,6 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import Card from '../components/Card';
-import axios from '../lib/axios';
+import { server } from '../config';
 import { postTypes } from '../types';
 
 interface PropTypes {
@@ -19,8 +19,11 @@ const Home: NextPage<PropTypes> = ({ posts }) => {
   );
 };
 
+export default Home;
+
 export const getServerSideProps: GetServerSideProps = async () => {
-  const { data } = await axios.get('/post');
+  const res = await fetch(`${server}/post`);
+  const data = await res.json();
 
   return {
     props: {
@@ -28,5 +31,3 @@ export const getServerSideProps: GetServerSideProps = async () => {
     },
   };
 };
-
-export default Home;

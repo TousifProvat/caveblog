@@ -299,11 +299,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // const posts = await prisma.post.findMany();
+  const posts = await prisma.post.findMany();
 
-  const data = await fetch(`${server}/post`).then((res) => res.json());
+  // const res = await fetch(`${server}/post`);
+  // const data = await res.json();
 
-  const paths = data.posts.map((post: postTypes) => ({
+  const paths = posts.map((post) => ({
     params: {
       slug: post.slug.toString(),
     },

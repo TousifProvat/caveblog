@@ -1,5 +1,5 @@
 import { GetServerSideProps, NextPage } from 'next';
-
+import { server } from '../config';
 //component
 import Post from '../components/RecentPost';
 import { useSession } from 'next-auth/react';
@@ -134,9 +134,7 @@ const Username: NextPage<PropTypes> = ({
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const res = await fetch(
-    `http://localhost:3000/api/user/${context.query.username}`
-  );
+  const res = await fetch(`${server}/user/${context.query.username}`);
 
   const data = await res.json();
 
