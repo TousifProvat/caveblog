@@ -1,44 +1,45 @@
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import axios from '../lib/axios';
+import commentsByParentId from '../lib/commentsByParent';
+import getComments from '../lib/getComments';
 import { commentTypes } from '../types';
 import formatDate from '../utils/formatDate';
 import CommentReply from './CommentReply';
 
 interface propTypes {
   comment: commentTypes;
-  replies?: commentTypes[];
+  replies: commentTypes[];
 }
 
 const BlogComment = ({ comment, replies }: propTypes) => {
+  const router = useRouter();
+  const { comments, mutate } = getComments(String(router.query.slug));
+
   //session
   const { data: session } = useSession();
   //state
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
   const [reply, setReply] = useState<string>('');
   const [show, setShow] = useState<boolean>(false);
-  const [Replies, setReplies] = useState<commentTypes[]>([]);
-
-  //hooks
-  useEffect(() => {
-    if (!replies) return;
-    setReplies(replies);
-  }, [replies]);
 
   //func
+  //basically its working like adding parent comment but with parent id
   const addRepliesLocally = (comment: commentTypes) => {
     let newReply: commentTypes = {
       ...comment,
       user: { ...session?.user },
     };
-    setReplies([newReply, ...Replies]);
+    mutate({ comments: [newReply, ...comments] }, false);
   };
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
+      setShow(false);
       const { data } = await axios.post('/comment/create', {
         comment: reply,
         post: comment.postId,
@@ -156,7 +157,7 @@ const BlogComment = ({ comment, replies }: propTypes) => {
         </form>
       )}
       <div className="comment-container flex flex-col space-y-2">
-        {Replies.map((reply: commentTypes, index: number) => (
+        {replies?.map((reply: commentTypes, index: number) => (
           <CommentReply key={index} reply={reply} />
         ))}
       </div>

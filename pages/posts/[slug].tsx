@@ -4,13 +4,22 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEventHandler, SyntheticEvent, useMemo, useState } from 'react';
-import useSWR from 'swr';
+
+//components
 import Bookmark from '../../components/Bookmark';
 import CommentList from '../../components/CommentList';
 import DropDown from '../../components/DropDown';
 import Star from '../../components/Star';
+
+//libs
 import axios from '../../lib/axios';
+import commentsByParentId from '../../lib/commentsByParent';
+import getComments from '../../lib/getComments';
+
+//types
 import { commentTypes, postTypes } from '../../types';
+
+//util
 import formatDate from '../../utils/formatDate';
 
 interface PropTypes {
@@ -30,8 +39,11 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   //hooks
   const { data: session } = useSession();
   const router = useRouter();
-  const { data, error, mutate } = useSWR<{ comments: commentTypes[] }>(
-    `/comment/post/${router.query.slug}`
+  const { comments, error, mutate } = getComments(post.slug);
+
+  const nestedComments = useMemo(
+    () => commentsByParentId(comments),
+    [comments]
   );
 
   const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
@@ -68,7 +80,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
       ...comment,
       user: { ...session?.user },
     };
-    // mutate((_data) => [, {}], false);
+    mutate({ comments: [newComment, ...comments] }, false);
   };
 
   const onSubmit = async (e: SyntheticEvent) => {
@@ -85,17 +97,6 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
       alert(err.response.data.message);
     }
   };
-
-  const commentsByParentId = useMemo(() => {
-    const obj: any = {};
-    data?.comments.forEach((comment: commentTypes) => {
-      obj[comment.parentId === null ? 'parent' : comment.parentId] ||= [];
-      obj[comment.parentId === null ? 'parent' : comment.parentId].push(
-        comment
-      );
-    });
-    return obj;
-  }, [data?.comments]);
 
   return (
     <div className="min-h-screen w-full flex flex-col sm:flex-row sm:justify-between relative">
@@ -228,7 +229,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
         </div>
         <div className="discussion px-4 space-y-6 pb-2">
           <h2 className="section-title text-xl font-bold">
-            Discussion ({data?.comments.length || 0})
+            Discussion ({comments?.length || 0})
           </h2>
           {session && (
             <form
@@ -268,7 +269,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
               )}
             </form>
           )}
-          {data?.comments && <CommentList comments={commentsByParentId} />}
+          {comments && <CommentList comments={nestedComments} />}
         </div>
       </div>
     </div>

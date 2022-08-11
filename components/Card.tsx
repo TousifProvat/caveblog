@@ -1,14 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { postTypes } from '../types';
 import formatDate from '../utils/formatDate';
 
-interface propTypes {
+interface PropTypes {
   post: postTypes;
 }
 
-const Card = ({ post }: propTypes) => {
+const Card: FunctionComponent<PropTypes> = ({ post }) => {
   return (
     <Link href={`/posts/${post.slug}`}>
       <a>
