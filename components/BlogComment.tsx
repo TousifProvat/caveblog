@@ -19,7 +19,7 @@ const BlogComment = ({ comment, replies }: propTypes) => {
   const router = useRouter();
   const { data: session } = useSession(); // session state
   // swr call to get comments
-  const { comments, mutate } = useComments(String(router.query.slug));
+  const { comments, mutate } = useComments(comment.postId);
 
   //states
   const [boxFocus, setBoxFocus] = useState<boolean>(false);

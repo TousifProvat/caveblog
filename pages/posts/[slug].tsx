@@ -14,14 +14,13 @@ import DropDown from '../../components/DropDown';
 
 //libs
 import axios from '../../lib/axios';
-import commentsByParentId from '../../lib/commentsByParent';
-import useComments from '../../lib/getComments';
 
 // //types
 import { postTypes } from '../../types';
 
 // //util
 import formatDate from '../../utils/formatDate';
+import Head from 'next/head';
 
 interface PropTypes {
   post: postTypes;
@@ -31,23 +30,12 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   //hooks
   const { data: session } = useSession();
   const router = useRouter();
-  //swr call to get comments
-  const { comments, error, mutate } = useComments(String(router.query.slug));
 
-  // states
-  const [boxFocus, setBoxFocus] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>(''); //comment body
   const [edit, setEdit] = useState<boolean>(false);
   const [blogValues, setBlogValues] = useState({
     title: post?.title,
     body: post?.body,
   });
-
-  // function behid nested comment
-  const nestedComments = useMemo(
-    () => commentsByParentId(comments),
-    [comments]
-  );
 
   const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setBlogValues({ ...blogValues, [e.target.name]: e.target.value });
@@ -77,40 +65,21 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
     }
   };
 
-  // function to add comment locally
-  const addCommentLocally = () => {
-    let newComment = {
-      body: message,
-      createdAt: Date.now(),
-      parentId: null,
-      postId: post.id,
-      updatedAt: Date.now(),
-      userId: session?.user.id,
-      user: { ...session?.user },
-    };
-    // mutate -> add comments locally
-    mutate({ comments: [newComment, ...comments] }, false);
-  };
-
-  // function to add comment to db
-  const onSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    try {
-      setMessage('');
-      setBoxFocus(false);
-      addCommentLocally();
-      //api call to create comment
-      await axios.post('/comment/create', {
-        message,
-        post: post.id,
-      });
-    } catch (err: any) {
-      alert(err.response.data.message);
-    }
-  };
-
   return (
     <div className="min-h-screen w-full flex flex-col sm:flex-row sm:justify-between relative">
+      <Head>
+        <title>{post.title}</title>
+        <meta name="title" content={post.title} />
+        <meta
+          name="description"
+          content="Just a blogging cave that was built for practice with nextjs"
+        />
+        <meta name="keywords" content="programming,nextjs,react,blog" />
+        <meta name="robots" content="index,follow" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="language" content="English" />
+        <meta name="author" content="Tousif Ahmed" />
+      </Head>
       <div className="interaction-section fixed hidden sm:block sm:space-y-5 sm:left-auto sm:top-[40%] sm:translate-y-[-50%]">
         {post && <Star slug={post?.slug} />}
         {post && <Bookmark slug={post?.slug} />}
@@ -239,48 +208,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
           {post && <Bookmark slug={post?.slug} />}
         </div>
         <div className="discussion px-4 space-y-6 pb-2">
-          <h2 className="section-title text-xl font-bold">
-            Discussion ({comments?.length || 0})
-          </h2>
-          {session && (
-            <form
-              className="add-comment-section flex flex-col space-y-2"
-              onSubmit={onSubmit}
-            >
-              <div className="comment-box flex space-x-2">
-                <div className="profile-avatar w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
-                  {session?.user?.image && (
-                    <Image
-                      priority
-                      src={session.user.image}
-                      width={40}
-                      height={40}
-                      alt={session.user.name!}
-                    />
-                  )}
-                </div>
-                <textarea
-                  placeholder="Add Comment..."
-                  className={`comment-box w-[90%] h-${
-                    boxFocus ? '36' : '20'
-                  } border-[1px] rounded-md border-gray-300 outline-none focus:border-blue-500 px-2 py-1 placeholder:font-light resize-y min-h-[100px]`}
-                  onFocus={() => setBoxFocus(true)}
-                  onChange={(e) => setMessage(e.target.value)}
-                  value={message}
-                  required
-                ></textarea>
-              </div>
-              {boxFocus && (
-                <button
-                  className="comment-submit-button px-4 py-2 bg-blue-400 hover:bg-blue-500 rounded-md w-20 ml-[3rem] text-white"
-                  type="submit"
-                >
-                  Submit
-                </button>
-              )}
-            </form>
-          )}
-          {comments && <CommentList comments={nestedComments} />}
+          {post?.id && <CommentList postId={post.id} />}
         </div>
       </div>
     </div>

@@ -7,25 +7,17 @@ export default async function handler(
 ) {
   if (req.method !== 'GET') return res.status(405).end();
   try {
-    const { slug } = req.query;
+    const { id } = req.query;
 
-    if (!slug) {
+    if (!id) {
       return res.status(400).json({
         message: 'Invalid Request',
       });
     }
 
-    const post = await prisma.post.findUnique({
-      where: {
-        slug: String(slug),
-      },
-    });
-
-    if (!post) return res.status(404).json({ message: 'Post Not Found' });
-
     const comments = await prisma.comment.findMany({
       where: {
-        postId: post.id,
+        postId: Number(id),
       },
       include: {
         user: {
