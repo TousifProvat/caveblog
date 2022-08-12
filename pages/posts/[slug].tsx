@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEventHandler, SyntheticEvent, useMemo, useState } from 'react';
-import { server } from '../../config';
 import { prisma } from '../../lib/prisma';
 
 //components
@@ -19,18 +18,22 @@ import commentsByParentId from '../../lib/commentsByParent';
 import useComments from '../../lib/getComments';
 
 // //types
-import { commentTypes, postTypes } from '../../types';
+import { postTypes } from '../../types';
 
 // //util
 import formatDate from '../../utils/formatDate';
-import axiosInstance from '../../lib/axios';
-import { fetchData } from 'next-auth/client/_utils';
 
 interface PropTypes {
   post: postTypes;
 }
 
 const Slug: NextPage<PropTypes> = ({ post }) => {
+  //hooks
+  const { data: session } = useSession();
+  const router = useRouter();
+  //swr call to get comments
+  const { comments, error, mutate } = useComments(String(router.query.slug));
+
   // states
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
   const [message, setMessage] = useState<string>(''); //comment body
@@ -40,11 +43,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
     body: post?.body,
   });
 
-  //hooks
-  const { data: session } = useSession();
-  const router = useRouter();
-  const { comments, error, mutate } = useComments(String(router.query.slug));
-
+  // function behid nested comment
   const nestedComments = useMemo(
     () => commentsByParentId(comments),
     [comments]
@@ -54,7 +53,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
     setBlogValues({ ...blogValues, [e.target.name]: e.target.value });
   };
 
-  // delete post
+  // delete blog post
   const deleteBlog = async () => {
     try {
       await axios.delete(`/post/delete/${post.id}`);
@@ -65,7 +64,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
     }
   };
 
-  //update post
+  //update blog post
   const onUpdate = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
@@ -78,7 +77,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
     }
   };
 
-  // add comment
+  // function to add comment locally
   const addCommentLocally = () => {
     let newComment = {
       body: message,
@@ -89,19 +88,22 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
       userId: session?.user.id,
       user: { ...session?.user },
     };
+    // mutate -> add comments locally
     mutate({ comments: [newComment, ...comments] }, false);
   };
 
+  // function to add comment to db
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
+      setMessage('');
+      setBoxFocus(false);
+      addCommentLocally();
+      //api call to create comment
       await axios.post('/comment/create', {
         message,
         post: post.id,
       });
-      addCommentLocally();
-      setMessage('');
-      setBoxFocus(false);
     } catch (err: any) {
       alert(err.response.data.message);
     }
@@ -319,9 +321,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await prisma.post.findMany();
-
-  // const res = await fetch(`${server}/post`);
-  // const data = await res.json();
 
   const paths = posts.map((post) => ({
     params: {

@@ -9,7 +9,7 @@ export default async function handler(
   try {
     const { slug, user } = req.query;
 
-    if (!slug || !user) {
+    if (!slug) {
       return res.status(400).json({
         message: 'Invalid Request',
       });

@@ -10,21 +10,18 @@ interface PropTypes {
 
 const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
   const { data: session } = useSession();
+
+  //swr call to get bookmark count and user bookmark status
   const { data, error, mutate } = useSWR<{
     bookmarked: boolean;
     bookmarks: number;
   }>(`/bookmark/post/${slug}?user=${session?.user.id}`);
 
-  //function to bookmark post
+  //function to toggle bookmark post
   const toggleBookmarkPost = async (slug: string) => {
     try {
       if (data?.bookmarked) {
-        await axios.delete('/bookmark/delete', {
-          data: {
-            slug,
-          },
-        });
-
+        //mutation -> decreases bookmark count & false bookmarked
         mutate(
           {
             bookmarked: false,
@@ -32,10 +29,14 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
           },
           false
         );
-      } else {
-        await axios.post('/bookmark/create', {
-          slug,
+        //api call to delete bookmark
+        await axios.delete('/bookmark/delete', {
+          data: {
+            slug,
+          },
         });
+      } else {
+        //mutation -> increases bookmark count & true bookmarked
         mutate(
           {
             bookmarked: true,
@@ -43,6 +44,10 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
           },
           false
         );
+        //api call to create bookmark
+        await axios.post('/bookmark/create', {
+          slug,
+        });
       }
     } catch (err: any) {
       alert(err.response.data.message);

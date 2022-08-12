@@ -1,7 +1,9 @@
 import type { GetServerSideProps, NextPage } from 'next';
+import useSWR from 'swr';
 import Card from '../components/Card';
 import { server } from '../config';
 import { postTypes } from '../types';
+import { prisma } from '../lib/prisma';
 
 interface PropTypes {
   posts: postTypes[];
@@ -22,12 +24,19 @@ const Home: NextPage<PropTypes> = ({ posts }) => {
 export default Home;
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch(`${server}/post`);
-  const data = await res.json();
+  // const res = await fetch(`${server}/post`);
+  // const data = await res.json();
+  const posts = await prisma.post.findMany({
+    include: {
+      author: true,
+      stars: true,
+      bookmarks: true,
+    },
+  });
 
   return {
     props: {
-      posts: data.posts,
+      posts: JSON.parse(JSON.stringify(posts)),
     },
   };
 };

@@ -2,7 +2,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import axios from '../lib/axios';
 import useComments from '../lib/getComments';
 import { commentTypes } from '../types';
@@ -15,17 +15,19 @@ interface propTypes {
 }
 
 const BlogComment = ({ comment, replies }: propTypes) => {
+  //hook
   const router = useRouter();
+  const { data: session } = useSession(); // session state
+  // swr call to get comments
   const { comments, mutate } = useComments(String(router.query.slug));
 
-  //session
-  const { data: session } = useSession();
-  //state
+  //states
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
   const [reply, setReply] = useState<string>('');
   const [show, setShow] = useState<boolean>(false);
 
-  //func
+  //funcs
+
   //basically its working like adding parent comment but with parent id
   const addRepliesLocally = () => {
     let newComment = {
@@ -37,23 +39,25 @@ const BlogComment = ({ comment, replies }: propTypes) => {
       userId: session?.user.id,
       user: { ...session?.user },
     };
+    // mutate -> adds comment locally
     mutate({ comments: [newComment, ...comments] }, false);
   };
 
+  // function to create comment
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
       setShow(false);
+      setReply('');
+      setBoxFocus(false);
+      addRepliesLocally();
+      //api call to create comment
       await axios.post('/comment/create', {
         message: reply,
         post: comment.postId,
         parentId: comment.id,
       });
-      addRepliesLocally();
-      setReply('');
-      setBoxFocus(false);
     } catch (err: any) {
-      console.log(err);
       alert(err.response.data.message);
     }
   };

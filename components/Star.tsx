@@ -8,21 +8,19 @@ interface PropTypes {
 }
 
 const Star: FunctionComponent<PropTypes> = ({ slug }) => {
+  //hooks
   const { data: session, status } = useSession();
+  //swr call to get star count and user star status
   const { data, error, mutate } = useSWR<{
     starred: boolean;
     stars: number;
   }>(`/star/post/${slug}?user=${session?.user.id}`);
 
-  //function to star post
+  //function to toggle star post
   const toggleStarPost = async (slug: string) => {
     try {
       if (data?.starred) {
-        await axios.delete('/star/delete', {
-          data: {
-            slug,
-          },
-        });
+        //mutation -> decreases star count & false starred
         mutate(
           {
             ...data,
@@ -31,10 +29,14 @@ const Star: FunctionComponent<PropTypes> = ({ slug }) => {
           },
           false
         );
-      } else {
-        await axios.post('/star/create', {
-          slug,
+        //api call to delete bookmark
+        await axios.delete('/star/delete', {
+          data: {
+            slug,
+          },
         });
+      } else {
+        //mutation -> increases star count & true starred
         mutate(
           {
             ...data,
@@ -43,6 +45,10 @@ const Star: FunctionComponent<PropTypes> = ({ slug }) => {
           },
           false
         );
+        //api call to create bookmark
+        await axios.post('/star/create', {
+          slug,
+        });
       }
     } catch (err: any) {
       alert(err.response.data.message);
