@@ -1,10 +1,15 @@
 import { GetServerSideProps, NextPage } from 'next';
+import dynamic from 'next/dynamic';
 import { server } from '../config';
-//component
-import Post from '../components/RecentPost';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
+
+//component
+const Post = dynamic(() => import('../components/RecentPost'));
+const RecentComment = dynamic(() => import('../components/RecentComment'));
+
+//types
 import {
   bookmarkTypes,
   commentTypes,
@@ -12,7 +17,6 @@ import {
   starTypes,
   userTypes,
 } from '../types';
-import RecentComment from '../components/RecentComment';
 
 interface PropTypes {
   user: userTypes;

@@ -3,6 +3,8 @@ import { getSession } from 'next-auth/react';
 import React, { ChangeEventHandler, SyntheticEvent, useState } from 'react';
 import axios from '../lib/axios';
 import withAuth from '../lib/withAuth';
+
+//types
 import { profileTypes, userTypes } from '../types';
 
 interface stateProps {

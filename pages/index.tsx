@@ -1,9 +1,12 @@
 import type { GetServerSideProps, NextPage } from 'next';
-import useSWR from 'swr';
-import Card from '../components/Card';
+// import Card from '../components/Card';
+const Card = dynamic(() => import('../components/Card'), {
+  suspense: true,
+});
 import { server } from '../config';
 import { postTypes } from '../types';
 import { prisma } from '../lib/prisma';
+import dynamic from 'next/dynamic';
 
 interface PropTypes {
   posts: postTypes[];
