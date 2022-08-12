@@ -54,15 +54,17 @@ const Username: NextPage<PropTypes> = ({
           </div>
 
           <div className="btn flex justify-end sm:mb-10">
-            <Link href="/settings">
-              <button
-                className={`px-2 py-2 bg-blue-500 rounded-md m-2 text-white hover:bg-blue-600 ${
-                  session?.user?.email !== user?.email &&
-                  'opacity-0 pointer-events-none'
-                }`}
-              >
-                Edit Profile
-              </button>
+            <Link href="/settings" as={'/settings'}>
+              <a>
+                <button
+                  className={`px-2 py-2 bg-blue-500 rounded-md m-2 text-white hover:bg-blue-600 ${
+                    session?.user?.email !== user?.email &&
+                    'opacity-0 pointer-events-none'
+                  }`}
+                >
+                  Edit Profile
+                </button>
+              </a>
             </Link>
           </div>
           <div className="profile-infos sm:text-center flex flex-col space-y-4 ">
@@ -79,7 +81,7 @@ const Username: NextPage<PropTypes> = ({
               <p className="location text-sm">{user?.profile?.location}</p>
               <p className="website text-sm">
                 {user?.profile?.website && (
-                  <Link href={user.profile.website}>
+                  <Link href={user.profile.website} as={user.profile.website}>
                     <a target="_blank" className="hover:text-blue-500">
                       {user.profile.website}
                     </a>
@@ -87,7 +89,6 @@ const Username: NextPage<PropTypes> = ({
                 )}
               </p>
             </div>
-            {/* <p className="joined text-slate-400"> Joined on 2026 June 2021</p> */}
           </div>
         </div>
         <div className="profile-bottom mt-[17.5rem] sm:mt-[24rem] grid gap-4 grid-cols-1 sm:grid-cols-2">

@@ -3,25 +3,29 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { ChangeEventHandler, SyntheticEvent, useMemo, useState } from 'react';
+import { ChangeEventHandler, SyntheticEvent, useState } from 'react';
 import { prisma } from '../../lib/prisma';
 
 //components
-import Bookmark from '../../components/Bookmark';
-import Star from '../../components/Star';
-import CommentList from '../../components/CommentList';
-import DropDown from '../../components/DropDown';
+import PageHead from '../../components/Head';
+const Bookmark = dynamic(() => import('../../components/Bookmark'), {
+  ssr: false,
+});
+const Star = dynamic(() => import('../../components/Star'), { ssr: false });
+const CommentList = dynamic(() => import('../../components/CommentList'), {
+  ssr: false,
+});
+const DropDown = dynamic(() => import('../../components/DropDown'));
 
 //libs
 import axios from '../../lib/axios';
 
-// //types
+//types
 import { postTypes } from '../../types';
 
-// //util
+//util
 import formatDate from '../../utils/formatDate';
-import Head from 'next/head';
-import PageHead from '../../components/Head';
+import dynamic from 'next/dynamic';
 
 interface PropTypes {
   post: postTypes;
@@ -84,7 +88,10 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
           <div className="blog-body px-4 space-y-4 min-h-[300px]">
             <div className="blog-header flex justify-between">
               <div className="author flex space-x-3">
-                <Link href={`/${post?.author?.username}`}>
+                <Link
+                  href={`/${post?.author?.username}`}
+                  as={`/${post?.author?.username}`}
+                >
                   <a>
                     <div className="author-img w-12 h-12 bg-gray-400 rounded-full overflow-hidden">
                       {post?.author?.image && (
@@ -99,7 +106,10 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
                   </a>
                 </Link>
                 <div className="author-details flex flex-col justify-between">
-                  <Link href={`/${post?.author?.username}`}>
+                  <Link
+                    href={`/${post?.author?.username}`}
+                    as={`/${post?.author?.username}`}
+                  >
                     <a>
                       <h2 className="author-name font-semibold hover:text-blue-500 cursor-pointer">
                         {post?.author?.name}

@@ -3,10 +3,12 @@ import type { GetServerSideProps, NextPage } from 'next';
 const Card = dynamic(() => import('../components/Card'), {
   suspense: true,
 });
+
 import { server } from '../config';
 import { postTypes } from '../types';
 import { prisma } from '../lib/prisma';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 
 interface PropTypes {
   posts: postTypes[];
@@ -17,7 +19,15 @@ const Home: NextPage<PropTypes> = ({ posts }) => {
     <div className="h-fit pb-5 pt-10">
       <div className="w-full grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {posts.map((post, index) => (
-          <Card key={index} post={post} />
+          <Link
+            href={`/posts/${post.slug}`}
+            as={`/posts/${post.slug}`}
+            key={index}
+          >
+            <a>
+              <Card post={post} />
+            </a>
+          </Link>
         ))}
       </div>
     </div>
