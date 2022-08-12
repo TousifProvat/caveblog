@@ -7,6 +7,7 @@ import fetcher from '../lib/fetcher';
 import { SessionProvider } from 'next-auth/react';
 import { SWRConfig } from 'swr';
 import Head from 'next/head';
+import PageHead from '../components/Head';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
@@ -16,19 +17,16 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       refetchOnWindowFocus={true}
     >
       <SWRConfig value={{ fetcher }}>
-        <Head>
-          <title>Cave.Blog</title>
-          <meta name="title" content="Cave.Blog" />
+        <PageHead title="Cave.Blog">
           <meta
             name="description"
             content="Just a blogging cave that was built for practice with nextjs"
           />
           <meta name="keywords" content="programming,nextjs,react,blog" />
           <meta name="robots" content="index,follow" />
-          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
           <meta name="language" content="English" />
           <meta name="author" content="Tousif Ahmed" />
-        </Head>
+        </PageHead>
         <Navbar />
         <Layout>
           <Component {...pageProps} />

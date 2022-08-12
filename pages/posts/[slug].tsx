@@ -21,6 +21,7 @@ import { postTypes } from '../../types';
 // //util
 import formatDate from '../../utils/formatDate';
 import Head from 'next/head';
+import PageHead from '../../components/Head';
 
 interface PropTypes {
   post: postTypes;
@@ -66,152 +67,147 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col sm:flex-row sm:justify-between relative">
-      <Head>
-        <title>{post.title}</title>
-        <meta name="title" content={post.title} />
-        <meta
-          name="description"
-          content="Just a blogging cave that was built for practice with nextjs"
-        />
-        <meta name="keywords" content="programming,nextjs,react,blog" />
+    <>
+      <PageHead title={post?.title}>
+        <meta name="description" content={post?.body.slice(0, 20)} />
         <meta name="robots" content="index,follow" />
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="language" content="English" />
-        <meta name="author" content="Tousif Ahmed" />
-      </Head>
-      <div className="interaction-section fixed hidden sm:block sm:space-y-5 sm:left-auto sm:top-[40%] sm:translate-y-[-50%]">
-        {post && <Star slug={post?.slug} />}
-        {post && <Bookmark slug={post?.slug} />}
-      </div>
-      <div className="min-h-screen blog-container w-full overflow-hidden space-y-3 sm:ml-12 md:ml-16 bg-white shadow-md sm:pb-10 rounded-b-md">
-        <div className="blog-img w-full h-auto bg-gray-400"> </div>
-        <div className="blog-body px-4 space-y-4 min-h-[300px]">
-          <div className="blog-header flex justify-between">
-            <div className="author flex space-x-3">
-              <Link href={`/${post?.author?.username}`}>
-                <a>
-                  <div className="author-img w-12 h-12 bg-gray-400 rounded-full overflow-hidden">
-                    {post?.author?.image && (
-                      <Image
-                        src={post.author.image}
-                        width={48}
-                        height={48}
-                        alt={post.author.name}
-                      />
-                    )}
-                  </div>
-                </a>
-              </Link>
-              <div className="author-details flex flex-col justify-between">
-                <Link href={`/${post?.author?.username}`}>
-                  <a>
-                    <h2 className="author-name font-semibold hover:text-blue-500 cursor-pointer">
-                      {post?.author?.name}
-                    </h2>
-                  </a>
-                </Link>
-                <span className="text-xs text-slate-500">
-                  Posted on {formatDate(post?.createdAt)}
-                </span>
-              </div>
-            </div>
-            {post?.author.username === session?.user?.username && (
-              <DropDown
-                icon={
-                  <div className="options cursor-pointer hover:bg-blue-200 rounded-full h-8 w-8 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                      />
-                    </svg>
-                  </div>
-                }
-                menus={[
-                  <li
-                    onClick={deleteBlog}
-                    className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col cursor-pointer"
-                    key="1"
-                  >
-                    Delete Blog
-                  </li>,
-                  <li
-                    className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col cursor-pointer"
-                    onClick={() => setEdit(true)}
-                    key="2"
-                  >
-                    Edit Blog
-                  </li>,
-                ]}
-              />
-            )}
-          </div>
-          {edit ? (
-            <>
-              <form onSubmit={onUpdate}>
-                <textarea
-                  onChange={onChange}
-                  value={blogValues.title}
-                  name="title"
-                  placeholder="New post title here..."
-                  maxLength={250}
-                  className="w-full text-3xl px-4 py-2 outline-none font-bold resize-none h-[100px] md:h-[100px]"
-                  required
-                />
-                <hr />
-                <textarea
-                  onChange={onChange}
-                  value={blogValues.body}
-                  name="body"
-                  placeholder="Write your post here...."
-                  className="w-full resize-none outline-none px-4 py-2 h-[400px]"
-                  maxLength={3000}
-                  required
-                />
-                <div className="buttons space-x-2">
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  >
-                    Update
-                  </button>
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                    onClick={() => setEdit(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </>
-          ) : (
-            <>
-              <h2 className="title text-3xl font-bold">{blogValues.title}</h2>
-              <p className="blog-content text-lg font-light">
-                {blogValues.body}
-              </p>
-            </>
-          )}
-        </div>
-        <div className="w-full interaction-section-small space-x-5 flex items-center justify-center pt-5 sm:pb-10 sm:hidden">
+        <meta name="author" content={post?.author.name} />
+      </PageHead>
+      <div className="min-h-screen w-full flex flex-col sm:flex-row sm:justify-between relative">
+        <div className="interaction-section fixed hidden sm:block sm:space-y-5 sm:left-auto sm:top-[40%] sm:translate-y-[-50%]">
           {post && <Star slug={post?.slug} />}
           {post && <Bookmark slug={post?.slug} />}
         </div>
-        <div className="discussion px-4 space-y-6 pb-2">
-          {post?.id && <CommentList postId={post.id} />}
+        <div className="min-h-screen blog-container w-full overflow-hidden space-y-3 sm:ml-12 md:ml-16 bg-white shadow-md sm:pb-10 rounded-b-md">
+          <div className="blog-img w-full h-auto bg-gray-400"> </div>
+          <div className="blog-body px-4 space-y-4 min-h-[300px]">
+            <div className="blog-header flex justify-between">
+              <div className="author flex space-x-3">
+                <Link href={`/${post?.author?.username}`}>
+                  <a>
+                    <div className="author-img w-12 h-12 bg-gray-400 rounded-full overflow-hidden">
+                      {post?.author?.image && (
+                        <Image
+                          src={post.author.image}
+                          width={48}
+                          height={48}
+                          alt={post.author.name}
+                        />
+                      )}
+                    </div>
+                  </a>
+                </Link>
+                <div className="author-details flex flex-col justify-between">
+                  <Link href={`/${post?.author?.username}`}>
+                    <a>
+                      <h2 className="author-name font-semibold hover:text-blue-500 cursor-pointer">
+                        {post?.author?.name}
+                      </h2>
+                    </a>
+                  </Link>
+                  <span className="text-xs text-slate-500">
+                    Posted on {formatDate(post?.createdAt)}
+                  </span>
+                </div>
+              </div>
+              {post?.author.username === session?.user?.username && (
+                <DropDown
+                  icon={
+                    <div className="options cursor-pointer hover:bg-blue-200 rounded-full h-8 w-8 flex items-center justify-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                        />
+                      </svg>
+                    </div>
+                  }
+                  menus={[
+                    <li
+                      onClick={deleteBlog}
+                      className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col cursor-pointer"
+                      key="1"
+                    >
+                      Delete Blog
+                    </li>,
+                    <li
+                      className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col cursor-pointer"
+                      onClick={() => setEdit(true)}
+                      key="2"
+                    >
+                      Edit Blog
+                    </li>,
+                  ]}
+                />
+              )}
+            </div>
+            {edit ? (
+              <>
+                <form onSubmit={onUpdate}>
+                  <textarea
+                    onChange={onChange}
+                    value={blogValues.title}
+                    name="title"
+                    placeholder="New post title here..."
+                    maxLength={250}
+                    className="w-full text-3xl px-4 py-2 outline-none font-bold resize-none h-[100px] md:h-[100px]"
+                    required
+                  />
+                  <hr />
+                  <textarea
+                    onChange={onChange}
+                    value={blogValues.body}
+                    name="body"
+                    placeholder="Write your post here...."
+                    className="w-full resize-none outline-none px-4 py-2 h-[400px]"
+                    maxLength={3000}
+                    required
+                  />
+                  <div className="buttons space-x-2">
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      Update
+                    </button>
+                    <button
+                      type="button"
+                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                      onClick={() => setEdit(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </>
+            ) : (
+              <>
+                <h2 className="title text-3xl font-bold">{blogValues.title}</h2>
+                <p className="blog-content text-lg font-light">
+                  {blogValues.body}
+                </p>
+              </>
+            )}
+          </div>
+          <div className="w-full interaction-section-small space-x-5 flex items-center justify-center pt-5 sm:pb-10 sm:hidden">
+            {post && <Star slug={post?.slug} />}
+            {post && <Bookmark slug={post?.slug} />}
+          </div>
+          <div className="discussion px-4 space-y-6 pb-2">
+            {post?.id && <CommentList postId={post.id} />}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
