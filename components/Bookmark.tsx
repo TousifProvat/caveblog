@@ -1,5 +1,5 @@
 import { useSession } from 'next-auth/react';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import useSWR from 'swr';
 import axios from '../lib/axios';
 

@@ -12,7 +12,10 @@ const CommentReply = ({ reply }: PropTypes) => {
   return (
     <>
       <div className="comment-box flex space-x-2 ml-[50px]">
-        <Link href={`/${reply?.user?.username}`}>
+        <Link
+          href={`/${reply?.user?.username}`}
+          as={`/${reply?.user?.username}`}
+        >
           <a>
             <div className="profile-avatar w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
               {reply?.user && (
@@ -33,7 +36,10 @@ const CommentReply = ({ reply }: PropTypes) => {
           {reply?.user && (
             <>
               <h2 className="comment-author-name font-semibold text-lg flex items-center">
-                <Link href={`/${reply.user.username}`}>
+                <Link
+                  href={`/${reply.user.username}`}
+                  as={`/${reply.user.username}`}
+                >
                   <a>{reply.user.name}</a>
                 </Link>
                 <span className="pl-4 text-xs font-light text-slate-500">

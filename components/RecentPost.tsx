@@ -7,7 +7,7 @@ interface PropsTypes {
 }
 const Post = ({ post }: PropsTypes) => {
   return (
-    <Link href={`/posts/${post.slug}`}>
+    <Link href={`/posts/${post.slug}`} as={`/posts/${post.slug}`}>
       <div
         className="comment px-4 py-4 border border-b-slate-100 cursor-pointer
     hover:bg-gray-50

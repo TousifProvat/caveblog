@@ -1,8 +1,8 @@
 import { signOut, useSession } from 'next-auth/react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
-import DropDown from './DropDown';
+const DropDown = dynamic(() => import('./DropDown'));
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -12,20 +12,12 @@ const Navbar = () => {
       <div className="flex justify-between items-center w-full container px-3 sm:px-0">
         <div className="left-side flex space-x-2 items-center">
           <div className="logo px-1 py-2 bg-blue-500 rounded">
-            <Link href={'/'}>
+            <Link href={'/'} as={'/'}>
               <a>
                 <h2 className="text-xl font-extrabold text-white">Cave.Blog</h2>
               </a>
             </Link>
           </div>
-          {/* <div
-            className="burger space-y-2 sm:hidden cursor-pointer hover:bg-blue-200 p-2 rounded"
-            onClick={() => setShow((prev) => !prev)}
-          >
-            <div className={`line-1 w-8 h-[4px] bg-slate-600 rounded`}></div>
-            <div className={`line-2 w-8 h-[4px] bg-slate-600 rounded`}></div>
-            <div className="line-2 w-8 h-[4px] bg-slate-600 rounded"></div>
-          </div> */}
         </div>
         <nav className="right-side flex items-center">
           {session && (
@@ -47,7 +39,11 @@ const Navbar = () => {
                 </div>
               }
               menus={[
-                <Link href={`/${session?.user?.username}`} key="1">
+                <Link
+                  href={`/${session?.user?.username}`}
+                  as={`/${session?.user?.username}`}
+                  key="1"
+                >
                   <a>
                     <li className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col">
                       {session?.user?.name}
@@ -58,14 +54,14 @@ const Navbar = () => {
                   </a>
                 </Link>,
                 <hr className="pb-3" key="2" />,
-                <Link href={'/newblog'} key="3">
+                <Link href={'/newblog'} as={'/newblog'} key="3">
                   <a>
                     <li className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md">
                       Create Post
                     </li>
                   </a>
                 </Link>,
-                <Link href={'/settings'} key="4">
+                <Link href={'/settings'} as={'/settings'} key="4">
                   <a>
                     <li className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md">
                       Settings
@@ -86,14 +82,14 @@ const Navbar = () => {
           {!session && (
             <ul className="flex space-x-4 text-l items-center">
               <li>
-                <Link href="/login">
+                <Link href="/login" as={'/login'}>
                   <a className="hover:bg-blue-200 hover:text-blue-500 px-3 py-3 rounded">
                     Login
                   </a>
                 </Link>
               </li>
               <li>
-                <Link href={'/register'}>
+                <Link href={'/register'} as={'/register'}>
                   <a className="px-3 py-3 border rounded border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white">
                     Create Account
                   </a>

@@ -9,7 +9,10 @@ interface propTypes {
 
 const RecentComment = ({ comment }: propTypes) => {
   return (
-    <Link href={`/posts/${comment.post.slug}`}>
+    <Link
+      href={`/posts/${comment.post.slug}`}
+      as={`/posts/${comment.post.slug}`}
+    >
       <div
         className="comment px-4 py-4 border border-b-slate-100 cursor-pointer
               hover:bg-gray-50

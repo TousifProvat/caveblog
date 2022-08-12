@@ -39,7 +39,7 @@ const NewBlog: NextPage = () => {
     <div>
       <div className="w-full h-[80vh] flex flex-col space-y-2 mx-auto max-w-[800px]">
         <div className="header flex justify-end px-2 py-2">
-          <Link href={'/'}>
+          <Link href={'/'} as={'/'}>
             <a>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -6,7 +6,6 @@ import fetcher from '../lib/fetcher';
 
 import { SessionProvider } from 'next-auth/react';
 import { SWRConfig } from 'swr';
-import Head from 'next/head';
 import PageHead from '../components/Head';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {

@@ -65,7 +65,10 @@ const BlogComment = ({ comment, replies }: propTypes) => {
   return (
     <div className="comment-box flex flex-col space-y-2">
       <div className="comment flex space-x-2">
-        <Link href={`/${comment?.user?.username}`}>
+        <Link
+          href={`/${comment?.user?.username}`}
+          as={`/${comment?.user?.username}`}
+        >
           <a>
             <div className="profile-avatar w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
               {comment.user?.image && (
@@ -78,13 +81,16 @@ const BlogComment = ({ comment, replies }: propTypes) => {
               )}
             </div>
           </a>
-        </Link>{' '}
+        </Link>
         <div
           className={`comment-box w-[90%] bg-white h-fit
               border-[1px] rounded-md border-gray-200  px-3 py-1 flex flex-col justify-between"`}
         >
           <h2 className="comment-author-name font-semibold text-lg flex items-center">
-            <Link href={`/${comment?.user?.username}`}>
+            <Link
+              href={`/${comment?.user?.username}`}
+              as={`/${comment?.user?.username}`}
+            >
               <a>{comment?.user?.name}</a>
             </Link>
             <span className="pl-4 text-xs font-light text-slate-500">

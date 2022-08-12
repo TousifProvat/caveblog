@@ -82,7 +82,7 @@ const Login: NextPage = () => {
               </div>
             </form>
             <div className="text-center">
-              <Link href={'/forget-password'}>
+              <Link href={'/forget-password'} as={'/forget-password'}>
                 <a className="cursor-pointer text-s text-slate-500 hover:text-blue-500">
                   Forget Password?
                 </a>
@@ -90,7 +90,7 @@ const Login: NextPage = () => {
             </div>
             <div className="text-center">
               <span className="text-s text-slate-500">Not a member yet?</span>
-              <Link href={'/register'}>
+              <Link href={'/register'} as={'/register'}>
                 <a className=" px-2 cursor-pointer text-s text-blue-500 hover:text-blue-600">
                   Register
                 </a>
@@ -102,6 +102,5 @@ const Login: NextPage = () => {
     </div>
   );
 };
-
 
 export default Login;
