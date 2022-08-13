@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 const DropDown = dynamic(() => import('./DropDown'));
+const Spinner = dynamic(() => import('./Spinner'));
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -20,7 +21,8 @@ const Navbar = () => {
           </div>
         </div>
         <nav className="right-side flex items-center">
-          {session && (
+          {!session && status === 'loading' && <Spinner />}
+          {session && status === 'authenticated' && (
             <DropDown
               icon={
                 <div
@@ -79,7 +81,7 @@ const Navbar = () => {
               ]}
             />
           )}
-          {!session && (
+          {!session && status === 'unauthenticated' && (
             <ul className="flex space-x-4 text-l items-center">
               <li>
                 <Link href="/login" as={'/login'}>

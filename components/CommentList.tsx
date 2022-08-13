@@ -1,6 +1,5 @@
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import React, {
   FunctionComponent,
   SyntheticEvent,
@@ -14,7 +13,6 @@ import { commentTypes } from '../types';
 import BlogComment from './BlogComment';
 
 interface PropTypes {
-  // comments: commentTypes[];
   postId: number;
 }
 
