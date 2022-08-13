@@ -40,8 +40,8 @@ const Card: FunctionComponent<PropTypes> = ({ post }) => {
           {post.title.slice(0, 50)} {post.title.length > 50 && '...'}
         </h2>
         <p className="text-slate-500">
-          {post.body.slice(0, 420)}
-          {post.body.length > 420 && '...'}
+          {post.body.slice(0, 350)}
+          {post.body.length > 350 && '...'}
         </p>
       </div>
       <div className="flex align-middle justify-evenly  w-full">
