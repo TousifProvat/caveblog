@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, Suspense } from 'react';
+import { text } from 'stream/consumers';
 import { postTypes } from '../types';
 import formatDate from '../utils/formatDate';
 
@@ -9,34 +10,40 @@ interface PropTypes {
 
 const Card: FunctionComponent<PropTypes> = ({ post }) => {
   return (
-    <div className="card flex flex-col justify-between bg-white rounded-md w-full min-h-[350px]  shadow-sm hover:shadow-md relative overflow-x-hidden space-y-2 pb-5 ">
-      <div className="blog-image w-30 h-40 bg-gray-200"></div>
-      <div className="author flex space-x-2 pl-2">
-        <div className="author-img h-9 w-9 rounded-full bg-gray-200 overflow-hidden">
-          {post.author.image && (
-            <Image
-              src={post.author.image}
-              objectFit="contain"
-              width={36}
-              height={36}
-              alt={post.author.name}
-            />
-          )}
-        </div>
-        <div className="author-details">
-          <div className="author-name text-xs font-semibold">
-            {post.author.name}
+    <div className="card flex flex-col justify-between bg-white rounded-md w-full min-h-[350px]  shadow-sm hover:shadow-md relative overflow-x-hidden space-y-2 p-3">
+      {/* <div className="blog-image w-30 h-40 bg-gray-200"></div> */}
+      <div className="card-top flex flex-col">
+        <div className="author flex space-x-2">
+          <div className="author-img h-9 w-9 rounded-full bg-gray-200 overflow-hidden">
+            {post.author.image && (
+              <Image
+                src={post.author.image}
+                objectFit="contain"
+                width={36}
+                height={36}
+                alt={post.author.name}
+              />
+            )}
           </div>
-          <div className="post-time">
-            <span className="text-xs text-slate-500">
-              {post.createdAt && formatDate(post.createdAt)}
-            </span>
+          <div className="author-details">
+            <div className="author-name text-xs font-semibold">
+              {post.author.name}
+            </div>
+            <div className="post-time">
+              <span className="text-xs text-slate-500">
+                {post.createdAt && formatDate(post.createdAt)}
+              </span>
+            </div>
           </div>
         </div>
+        <h2 className="text-[1.4rem] sm:text-[1.5rem] font-bold pb-2">
+          {post.title.slice(0, 50)} {post.title.length > 50 && '...'}
+        </h2>
+        <p className="text-slate-500">
+          {post.body.slice(0, 420)}
+          {post.body.length > 420 && '...'}
+        </p>
       </div>
-      <h2 className="text-[1.4rem] sm:text-[1.5rem] font-bold pl-12 pb-2">
-        {post.title.slice(0, 50)} {post.title.length > 50 && '...'}
-      </h2>
       <div className="flex align-middle justify-evenly  w-full">
         <div className="star group flex space-x-1 items-center hover:bg-yellow-200 px-2 py-1 rounded">
           <svg

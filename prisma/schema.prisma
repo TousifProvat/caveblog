@@ -75,7 +75,7 @@ model Post {
   author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   title     String
-  body      String
+  body      String     @db.VarChar(3000)
   slug      String     @unique
   stars     Star[]
   bookmarks Bookmark[]

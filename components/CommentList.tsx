@@ -1,4 +1,5 @@
 import { useSession } from 'next-auth/react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, {
   FunctionComponent,
@@ -10,7 +11,8 @@ import axios from '../lib/axios';
 import commentsByParentId from '../lib/commentsByParent';
 import useComments from '../lib/getComments';
 import { commentTypes } from '../types';
-import BlogComment from './BlogComment';
+import Spinner from './Spinner';
+const BlogComment = dynamic(() => import('./BlogComment'));
 
 interface PropTypes {
   postId: number;
@@ -18,10 +20,10 @@ interface PropTypes {
 
 const CommentList: FunctionComponent<PropTypes> = ({ postId }) => {
   //hooks
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   //swr call to get comments
-  const { comments, mutate } = useComments(postId);
+  const { comments, mutate, error } = useComments(postId);
 
   // states
   const [boxFocus, setBoxFocus] = useState<boolean>(false);
@@ -68,6 +70,7 @@ const CommentList: FunctionComponent<PropTypes> = ({ postId }) => {
       <h2 className="section-title text-xl font-bold">
         Discussion ({comments?.length || 0})
       </h2>
+      {!session && status === 'loading' && <Spinner />}
       {session && (
         <form
           className="add-comment-section flex flex-col space-y-2"

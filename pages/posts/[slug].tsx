@@ -8,13 +8,11 @@ import { prisma } from '../../lib/prisma';
 
 //components
 import PageHead from '../../components/Head';
+import CommentList from '../../components/CommentList';
 const Bookmark = dynamic(() => import('../../components/Bookmark'), {
   ssr: false,
 });
 const Star = dynamic(() => import('../../components/Star'), { ssr: false });
-const CommentList = dynamic(() => import('../../components/CommentList'), {
-  ssr: false,
-});
 const DropDown = dynamic(() => import('../../components/DropDown'));
 
 //libs
