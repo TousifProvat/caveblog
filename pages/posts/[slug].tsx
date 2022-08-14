@@ -207,8 +207,8 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
             )}
           </div>
           <div className="w-full interaction-section-small space-x-5 flex items-center justify-center pt-5 sm:pb-10 sm:hidden">
-            {post && <Star slug={post?.slug} />}
-            {post && <Bookmark slug={post?.slug} />}
+            {post && <Star postId={post.id} />}
+            {post && <Bookmark postId={post.id} />}
           </div>
           <div className="discussion px-4 space-y-6 pb-2">
             {post?.id && <CommentList postId={post.id} />}
