@@ -7,7 +7,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method !== 'DELETE') return res.status(405).end();
-  const { slug } = req.body;
+  const { postId } = req.body;
 
   try {
     const session = await getSession({ req });
@@ -15,20 +15,9 @@ export default async function handler(
     if (!session || !session?.user?.id)
       return res.status(401).json({ message: 'Unauthorized Access' });
 
-    const post = await prisma.post.findUnique({
-      where: {
-        slug,
-      },
-    });
-
-    if (!post)
-      return res.status(404).json({
-        message: 'Post Not Found',
-      });
-
     const star = await prisma.star.findFirst({
       where: {
-        postId: post.id,
+        postId: postId,
         userId: session.user.id,
       },
     });

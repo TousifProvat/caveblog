@@ -2,9 +2,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import { prisma } from '../../../lib/prisma';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'DELETE') return res.status(405).end();
-  const { slug } = req.body;
+  const { postId } = req.body;
 
   try {
     const session = await getSession({ req });
@@ -12,20 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!session || !session?.user?.id)
       return res.status(401).json({ message: 'Unauthorized Access' });
 
-    const post = await prisma.post.findUnique({
-      where: {
-        slug,
-      },
-    });
-
-    if (!post)
-      return res.status(404).json({
-        message: 'Post Not Found',
-      });
-
     const bookmark = await prisma.bookmark.findFirst({
       where: {
-        postId: post.id,
+        postId: postId,
         userId: session.user.id,
       },
     });
