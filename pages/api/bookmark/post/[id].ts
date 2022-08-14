@@ -7,36 +7,30 @@ export default async function handler(
 ) {
   if (req.method !== 'GET') return res.status(405).end();
   try {
-    const { slug, user } = req.query;
+    const { id, user } = req.query;
 
-    const post = await prisma.post.findUnique({
+    if (!id) return res.status(404).json({ message: 'Post Not Found' });
+
+    const bookmarks = await prisma.bookmark.count({
       where: {
-        slug: String(slug),
+        postId: Number(id),
       },
     });
 
-    if (!post) return res.status(404).json({ message: 'Post Not Found' });
-
-    const stars = await prisma.star.count({
-      where: {
-        postId: post.id,
-      },
-    });
-
-    let starred = false;
+    let bookmarked = false;
 
     if (user) {
-      const isStarred = await prisma.star.count({
+      const isBookmarked = await prisma.bookmark.count({
         where: {
-          postId: post.id,
+          postId: Number(id),
           userId: String(user),
         },
       });
 
-      starred = isStarred ? true : false;
+      bookmarked = isBookmarked ? true : false;
     }
 
-    return res.status(200).json({ stars, starred });
+    return res.status(200).json({ bookmarks, bookmarked });
   } catch (err) {
     console.log({ err });
     return res.status(500).json({ message: 'Something went wrong' });

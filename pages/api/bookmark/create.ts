@@ -13,25 +13,25 @@ export default async function handler(
     if (!session || !session?.user?.id)
       return res.status(401).json({ message: 'Unauthorized Access' });
     //user will be replaced by req.userid
-    const { slug } = req.body;
+    const { postId } = req.body;
 
-    if (!slug) return res.status(400).json({ message: 'Invalid request' });
+    if (!postId) return res.status(400).json({ message: 'Invalid request' });
 
-    const postExist = await prisma.post.findUnique({
-      where: {
-        slug: slug,
-      },
-    });
+    // const postExist = await prisma.post.findUnique({
+    //   where: {
+    //     slug: slug,
+    //   },
+    // });
 
-    if (!postExist)
-      return res.status(400).json({
-        message: 'Invalid Request',
-      });
+    // if (!postExist)
+    //   return res.status(400).json({
+    //     message: 'Invalid Request',
+    //   });
 
     const newbookmark = await prisma.bookmark.create({
       data: {
         userId: session.user.id,
-        postId: postExist.id,
+        postId: postId,
       },
     });
 

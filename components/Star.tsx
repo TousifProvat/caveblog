@@ -4,20 +4,20 @@ import useSWR from 'swr';
 import axios from '../lib/axios';
 
 interface PropTypes {
-  slug: string;
+  postId: number;
 }
 
-const Star: FunctionComponent<PropTypes> = ({ slug }) => {
+const Star: FunctionComponent<PropTypes> = ({ postId }) => {
   //hooks
   const { data: session, status } = useSession();
   //swr call to get star count and user star status
   const { data, error, mutate } = useSWR<{
     starred: boolean;
     stars: number;
-  }>(`/star/post/${slug}?user=${session?.user.id}`);
+  }>(`/star/post/${postId}?user=${session?.user.id}`);
 
   //function to toggle star post
-  const toggleStarPost = async (slug: string) => {
+  const toggleStarPost = async (postId: number) => {
     try {
       if (data?.starred) {
         //mutation -> decreases star count & false starred
@@ -32,7 +32,7 @@ const Star: FunctionComponent<PropTypes> = ({ slug }) => {
         //api call to delete bookmark
         await axios.delete('/star/delete', {
           data: {
-            slug,
+            postId,
           },
         });
       } else {
@@ -47,7 +47,7 @@ const Star: FunctionComponent<PropTypes> = ({ slug }) => {
         );
         //api call to create bookmark
         await axios.post('/star/create', {
-          slug,
+          postId,
         });
       }
     } catch (err: any) {
@@ -57,7 +57,7 @@ const Star: FunctionComponent<PropTypes> = ({ slug }) => {
 
   return (
     <div className="star flex sm:flex-col space-x-1 sm:space-x-0 sm:space-y-1 items-center ">
-      <div className="star-icon" onClick={() => toggleStarPost(slug)}>
+      <div className="star-icon" onClick={() => toggleStarPost(postId)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={`h-7 w-7 text-slate-500 hover:fill-yellow-400 hover:text-yellow-400 cursor-pointer ${

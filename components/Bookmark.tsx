@@ -4,20 +4,20 @@ import useSWR from 'swr';
 import axios from '../lib/axios';
 
 interface PropTypes {
-  slug: string;
+  postId: number;
 }
 
-const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
+const Bookmark: FunctionComponent<PropTypes> = ({ postId }) => {
   const { data: session } = useSession();
 
   //swr call to get bookmark count and user bookmark status
   const { data, error, mutate } = useSWR<{
     bookmarked: boolean;
     bookmarks: number;
-  }>(`/bookmark/post/${slug}?user=${session?.user.id}`);
+  }>(`/bookmark/post/${postId}?user=${session?.user.id}`);
 
   //function to toggle bookmark post
-  const toggleBookmarkPost = async (slug: string) => {
+  const toggleBookmarkPost = async (postId: number) => {
     try {
       if (data?.bookmarked) {
         //mutation -> decreases bookmark count & false bookmarked
@@ -32,7 +32,7 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
         //api call to delete bookmark
         await axios.delete('/bookmark/delete', {
           data: {
-            slug,
+            postId,
           },
         });
       } else {
@@ -47,7 +47,7 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
         );
         //api call to create bookmark
         await axios.post('/bookmark/create', {
-          slug,
+          postId,
         });
       }
     } catch (err: any) {
@@ -57,7 +57,7 @@ const Bookmark: FunctionComponent<PropTypes> = ({ slug }) => {
 
   return (
     <div className="bookmark flex sm:flex-col space-x-1 sm:space-x-0 sm:space-y-1 items-center">
-      <div className="bookmark-icon" onClick={() => toggleBookmarkPost(slug)}>
+      <div className="bookmark-icon" onClick={() => toggleBookmarkPost(postId)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={`h-7 w-7 text-slate-500 hover:text-blue-500 hover:fill-blue-500 cursor-pointer ${

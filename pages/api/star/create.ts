@@ -12,26 +12,15 @@ export default async function handler(
 
     if (!session || !session?.user?.id)
       return res.status(401).json({ message: 'Unauthorized Access' });
-    //user will be replaced by req.userid
-    const { slug } = req.body;
 
-    if (!slug) return res.status(400).json({ message: 'Invalid request' });
+    const { postId }: { postId: number } = req.body;
 
-    const postExist = await prisma.post.findUnique({
-      where: {
-        slug: String(slug),
-      },
-    });
-
-    if (!postExist)
-      return res.status(400).json({
-        message: 'Invalid Request',
-      });
+    if (!postId) return res.status(400).json({ message: 'Invalid request' });
 
     const newStar = await prisma.star.create({
       data: {
         userId: session.user.id,
-        postId: postExist.id,
+        postId: postId,
       },
     });
 

@@ -78,8 +78,8 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
       </PageHead>
       <div className="min-h-screen w-full flex flex-col sm:flex-row sm:justify-between relative">
         <div className="interaction-section fixed hidden sm:block sm:space-y-5 sm:left-auto sm:top-[40%] sm:translate-y-[-50%]">
-          {post && <Star slug={post?.slug} />}
-          {post && <Bookmark slug={post?.slug} />}
+          {post && <Star postId={post.id} />}
+          {post && <Bookmark postId={post.id} />}
         </div>
         <div className="min-h-screen blog-container w-full overflow-hidden space-y-3 sm:ml-12 md:ml-16 bg-white shadow-md sm:pb-10 rounded-b-md">
           <div className="blog-img w-full h-auto bg-gray-400"> </div>
