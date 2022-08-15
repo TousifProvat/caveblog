@@ -24,6 +24,7 @@ import { postTypes } from '../../types';
 //util
 import formatDate from '../../utils/formatDate';
 import dynamic from 'next/dynamic';
+import CommentForm from '../../components/CommentForm';
 
 interface PropTypes {
   post: postTypes;
@@ -65,6 +66,23 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
       router.push(`/posts/${res.data.post.slug}`);
     } catch (err: any) {
       alert(err?.response?.data?.message);
+    }
+  };
+
+  //comment form
+  const [loading, setLoading] = useState(false);
+
+  const onCommentCreate = async (message: string) => {
+    try {
+      setLoading(true);
+      await axios.post('/comment/create', {
+        message,
+        post: post.id,
+      });
+    } catch (err) {
+      alert({ err });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -211,6 +229,13 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
             {post && <Bookmark postId={post.id} />}
           </div>
           <div className="discussion px-4 space-y-6 pb-2">
+            {session && (
+              <CommentForm
+                onSubmit={onCommentCreate}
+                session={session}
+                loading={loading}
+              />
+            )}
             {post?.id && <CommentList postId={post.id} />}
           </div>
         </div>
