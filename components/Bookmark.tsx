@@ -19,6 +19,9 @@ const Bookmark: FunctionComponent<PropTypes> = ({ postId }) => {
   //function to toggle bookmark post
   const toggleBookmarkPost = async (postId: number) => {
     try {
+      if (!session) {
+        return alert('Unauthorized Access');
+      }
       if (data?.bookmarked) {
         //mutation -> decreases bookmark count & false bookmarked
         mutate(

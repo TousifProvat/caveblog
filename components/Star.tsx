@@ -1,5 +1,5 @@
 import { useSession } from 'next-auth/react';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import useSWR from 'swr';
 import axios from '../lib/axios';
 
@@ -9,7 +9,7 @@ interface PropTypes {
 
 const Star: FunctionComponent<PropTypes> = ({ postId }) => {
   //hooks
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   //swr call to get star count and user star status
   const { data, error, mutate } = useSWR<{
     starred: boolean;
@@ -19,6 +19,9 @@ const Star: FunctionComponent<PropTypes> = ({ postId }) => {
   //function to toggle star post
   const toggleStarPost = async (postId: number) => {
     try {
+      if (!session) {
+        return alert('Unauthorized Access');
+      }
       if (data?.starred) {
         //mutation -> decreases star count & false starred
         mutate(
