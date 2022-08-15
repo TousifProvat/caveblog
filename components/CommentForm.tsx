@@ -1,24 +1,36 @@
 import Image from 'next/image';
-import React, { FunctionComponent, SyntheticEvent, useState } from 'react';
+import React, {
+  FunctionComponent,
+  SyntheticEvent,
+  useRef,
+  useState,
+} from 'react';
 import Spinner from './Spinner';
 
 interface PropTypes {
+  autoFocus?: boolean;
   onSubmit: Function;
   session: any;
   loading: boolean;
+  type?: string;
+  initValue?: string;
 }
 
 const CommentForm: FunctionComponent<PropTypes> = ({
+  autoFocus = false,
   onSubmit,
   session,
   loading,
+  type,
+  initValue = '',
 }) => {
   const [formFocus, setFormFocus] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
+  const textRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    onSubmit(message).then(() => setMessage(''));
+    onSubmit(message).then(() => type !== 'update' && setMessage(''));
   };
 
   return (
@@ -39,13 +51,18 @@ const CommentForm: FunctionComponent<PropTypes> = ({
           )}
         </div>
         <textarea
+          ref={textRef}
+          autoFocus={autoFocus}
           placeholder="Add Comment..."
           className={`comment-box w-[90%] h-${
             formFocus ? '36' : '20'
           } border-[1px] rounded-md border-gray-300 outline-none focus:border-blue-500 px-2 py-1 placeholder:font-light resize-y min-h-[100px]`}
-          onFocus={() => setFormFocus(true)}
+          onFocus={() => {
+            setFormFocus(true);
+          }}
           onChange={(e) => setMessage(e.target.value)}
           value={message}
+          defaultValue={initValue}
           required
         ></textarea>
       </div>
@@ -55,7 +72,13 @@ const CommentForm: FunctionComponent<PropTypes> = ({
           type="submit"
           disabled={loading}
         >
-          {loading ? <Spinner size={5} /> : 'Submit'}
+          {loading ? (
+            <Spinner size={5} />
+          ) : type !== 'update' ? (
+            'Submit'
+          ) : (
+            'Update'
+          )}
         </button>
       )}
     </form>

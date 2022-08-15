@@ -52,12 +52,32 @@ const PostProvider: FunctionComponent<PropTypes> = ({ children }) => {
     });
   };
 
+  const deleteCommentLocally = (id: number) => {
+    setComments((prevComments) => {
+      return prevComments.filter((comment) => comment.id !== id);
+    });
+  };
+
+  const updateCommentLocally = (message: string, id: number) => {
+    setComments((prevComments) => {
+      return prevComments.map((comment) => {
+        if (comment.id === id) {
+          return { ...comment, body: message };
+        } else {
+          return comment;
+        }
+      });
+    });
+  };
+
   return (
     <Context.Provider
       value={{
         rootComments: commentsByParentId['parent'],
         getReplies,
         addCommentLocally,
+        deleteCommentLocally,
+        updateCommentLocally,
       }}
     >
       {children}

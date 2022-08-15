@@ -78,20 +78,16 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   const onCommentCreate = async (message: string) => {
     try {
       setLoading(true);
-      await axios.post('/comment/create', {
+      const { data } = await axios.post('/comment/create', {
         message,
         post: post.id,
       });
-      const newCommnet = {
-        body: message,
-        createdAt: Date.now(),
-        parentId: null,
-        postId: post.id,
-        updatedAt: Date.now(),
-        userId: session?.user.id,
-        user: { ...session?.user },
+      const newComment = {
+        ...data.comment,
+        user: session?.user,
       };
-      addCommentLocally(newCommnet);
+
+      addCommentLocally(newComment);
     } catch (err) {
       alert({ err });
     } finally {

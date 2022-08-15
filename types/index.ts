@@ -30,7 +30,7 @@ export interface commentTypes {
   id: number;
   body: string;
   postId: number;
-  userId: number;
+  userId: string;
   createdAt: string;
   updatedAt: string;
   user: {

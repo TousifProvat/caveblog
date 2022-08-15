@@ -11,7 +11,7 @@ interface PropTypes {
 const CommentReply = ({ reply }: PropTypes) => {
   return (
     <>
-      <div className="comment-box flex space-x-2 ml-[50px]">
+      <div className="comment-box space-x-2 flex">
         <Link
           href={`/${reply?.user?.username}`}
           as={`/${reply?.user?.username}`}
