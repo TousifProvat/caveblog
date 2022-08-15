@@ -1,64 +1,55 @@
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import React, { SyntheticEvent, useState } from 'react';
+import React, { FunctionComponent, SyntheticEvent, useState } from 'react';
+import { usePost } from '../contexts/PostContext';
 import axios from '../lib/axios';
-import useComments from '../lib/getComments';
 import { commentTypes } from '../types';
 import formatDate from '../utils/formatDate';
+import CommentForm from './CommentForm';
 import CommentReply from './CommentReply';
 
-interface propTypes {
+interface PropTypes {
   comment: commentTypes;
-  replies: commentTypes[];
 }
 
-const BlogComment = ({ comment, replies }: propTypes) => {
+const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
+  const { getReplies, addCommentLocally } = usePost();
+  const childComments = getReplies(comment.id);
+
   //hook
-  const router = useRouter();
   const { data: session } = useSession(); // session state
-  // swr call to get comments
-  const { comments, mutate } = useComments(comment.postId);
 
   //states
-  const [boxFocus, setBoxFocus] = useState<boolean>(false);
-  const [reply, setReply] = useState<string>('');
-  const [show, setShow] = useState<boolean>(false);
+  const [formShow, setFormShow] = useState<boolean>(false);
+  const [formLoading, setFormLoading] = useState<boolean>(false);
 
   //funcs
 
-  //basically its working like adding parent comment but with parent id
-  const addRepliesLocally = () => {
-    let newComment = {
-      body: reply,
-      createdAt: Date.now(),
-      parentId: null,
-      postId: comment.postId,
-      updatedAt: Date.now(),
-      userId: session?.user.id,
-      user: { ...session?.user },
-    };
-    // mutate -> adds comment locally
-    mutate({ comments: [newComment, ...comments] }, false);
-  };
-
-  // function to create comment
-  const onSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault();
+  // function to create comment reply
+  const onReply = async (message: string) => {
     try {
-      setShow(false);
-      setReply('');
-      setBoxFocus(false);
-      addRepliesLocally();
-      //api call to create comment
+      setFormLoading(true);
       await axios.post('/comment/create', {
-        message: reply,
+        message,
         post: comment.postId,
         parentId: comment.id,
       });
+      let commentReply = {
+        body: message,
+        createdAt: Date.now(),
+        parentId: comment.id,
+        postId: comment.postId,
+        updatedAt: Date.now(),
+        userId: session?.user.id,
+        user: { ...session?.user },
+      };
+      addCommentLocally(commentReply);
     } catch (err: any) {
-      alert(err.response.data.message);
+      alert(err);
+    } finally {
+      setFormShow(false);
+      setFormLoading(false);
     }
   };
 
@@ -103,7 +94,7 @@ const BlogComment = ({ comment, replies }: propTypes) => {
           {session && (
             <div
               className="group w-fit interactions flex items-center space-x-1 py-2 cursor-pointer"
-              onClick={() => setShow((prev) => !prev)}
+              onClick={() => setFormShow((prev) => !prev)}
             >
               <span className="text-sm text-slate-300 group-hover:text-slate-500">
                 reply
@@ -124,56 +115,18 @@ const BlogComment = ({ comment, replies }: propTypes) => {
           )}
         </div>
       </div>
-      {show && (
-        <form
-          className="add-comment-section flex flex-col space-y-2"
-          onSubmit={onSubmit}
-        >
-          <div className="comment-box flex space-x-2 ml-[50px]">
-            <div className="profile-avatar w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
-              {session?.user?.image && (
-                <Image
-                  src={session.user.image}
-                  width={40}
-                  height={40}
-                  alt={session.user.name!}
-                />
-              )}
-            </div>
-            <textarea
-              placeholder="Add Reply..."
-              className={`comment-box w-[90%] h-${
-                boxFocus ? '36' : '20'
-              } border-[1px] rounded-md border-gray-300 outline-none focus:border-blue-500 px-2 py-1 placeholder:font-light resize-y min-h-[100px]`}
-              onFocus={() => setBoxFocus(true)}
-              onChange={(e) => setReply(e.target.value)}
-              value={reply}
-              required
-            ></textarea>
-          </div>
-          {boxFocus && (
-            <div className="buttons ml-[98px] space-x-2">
-              <button
-                className="comment-submit-button  px-[6px] py-[6px] bg-blue-400 hover:bg-blue-500 rounded-md w-20  text-white"
-                type="submit"
-              >
-                Submit
-              </button>
-              <button
-                className="px-[6px] py-[6px] bg-red-500 hover:bg-red-600 rounded-md w-20 text-white"
-                onClick={() => setShow(false)}
-                type="button"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-        </form>
+      {formShow && (
+        <CommentForm
+          onSubmit={onReply}
+          session={session}
+          loading={formLoading}
+        />
       )}
       <div className="comment-container flex flex-col space-y-2">
-        {replies?.map((reply: commentTypes, index: number) => (
-          <CommentReply key={index} reply={reply} />
-        ))}
+        {childComments?.length > 0 &&
+          childComments.map((reply: commentTypes, index: number) => (
+            <CommentReply key={index} reply={reply} />
+          ))}
       </div>
     </div>
   );

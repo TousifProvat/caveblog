@@ -51,11 +51,11 @@ const CommentForm: FunctionComponent<PropTypes> = ({
       </div>
       {formFocus && (
         <button
-          className="comment-submit-button px-4 py-2 bg-blue-400 hover:bg-blue-500 rounded-md w-20 ml-[3rem] text-white"
+          className="comment-submit-button px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-md w-20 ml-[3rem] text-white"
           type="submit"
           disabled={loading}
         >
-          {loading ? <Spinner /> : 'Submit'}
+          {loading ? <Spinner size={5} /> : 'Submit'}
         </button>
       )}
     </form>

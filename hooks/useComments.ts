@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 
-const useComments = (id: number) => {
-  const { data, error, mutate } = useSWR(`/comment/post/${id}`);
+const useComments = (slug: string) => {
+  const { data, error, mutate } = useSWR(`/comment/post/${slug}`);
 
   return {
     comments: data?.comments,

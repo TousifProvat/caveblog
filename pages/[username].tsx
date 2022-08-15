@@ -60,7 +60,7 @@ const Username: NextPage<PropTypes> = ({
             />
           </div>
           <div className="btn self-end -mt-[1rem] sm:-mt-[2rem]">
-            {!session && status === 'loading' && <Spinner />}
+            {!session && status === 'loading' && <Spinner size={8} />}
             {session && status === 'authenticated' && (
               <Link href="/settings" as={'/settings'}>
                 <a>

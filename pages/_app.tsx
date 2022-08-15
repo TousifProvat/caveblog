@@ -7,6 +7,7 @@ import fetcher from '../lib/fetcher';
 import { SessionProvider } from 'next-auth/react';
 import { SWRConfig } from 'swr';
 import PageHead from '../components/Head';
+import PostProvider from '../contexts/PostContext';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
@@ -28,7 +29,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         </PageHead>
         <Navbar />
         <Layout>
-          <Component {...pageProps} />
+          <PostProvider>
+            <Component {...pageProps} />
+          </PostProvider>
         </Layout>
       </SWRConfig>
     </SessionProvider>

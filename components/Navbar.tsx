@@ -21,7 +21,7 @@ const Navbar = () => {
           </div>
         </div>
         <nav className="right-side flex items-center">
-          {!session && status === 'loading' && <Spinner />}
+          {!session && status === 'loading' && <Spinner size={12} />}
           {session && status === 'authenticated' && (
             <DropDown
               icon={

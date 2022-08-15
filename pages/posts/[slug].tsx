@@ -25,6 +25,7 @@ import { postTypes } from '../../types';
 import formatDate from '../../utils/formatDate';
 import dynamic from 'next/dynamic';
 import CommentForm from '../../components/CommentForm';
+import { usePost } from '../../contexts/PostContext';
 
 interface PropTypes {
   post: postTypes;
@@ -69,7 +70,9 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
     }
   };
 
-  //comment form
+  //comments list
+  const { addCommentLocally, rootComments } = usePost();
+
   const [loading, setLoading] = useState(false);
 
   const onCommentCreate = async (message: string) => {
@@ -79,6 +82,16 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
         message,
         post: post.id,
       });
+      const newCommnet = {
+        body: message,
+        createdAt: Date.now(),
+        parentId: null,
+        postId: post.id,
+        updatedAt: Date.now(),
+        userId: session?.user.id,
+        user: { ...session?.user },
+      };
+      addCommentLocally(newCommnet);
     } catch (err) {
       alert({ err });
     } finally {
@@ -236,7 +249,9 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
                 loading={loading}
               />
             )}
-            {post?.id && <CommentList postId={post.id} />}
+            {rootComments && rootComments.length > 0 && (
+              <CommentList comments={rootComments} />
+            )}
           </div>
         </div>
       </div>
