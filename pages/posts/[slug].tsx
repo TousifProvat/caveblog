@@ -32,15 +32,16 @@ interface PropTypes {
 }
 
 const Slug: NextPage<PropTypes> = ({ post }) => {
-  //hooks
+  const { addCommentLocally, rootComments } = usePost();
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [edit, setEdit] = useState<boolean>(false);
+  const [editPost, setEditPost] = useState<boolean>(false);
   const [blogValues, setBlogValues] = useState({
     title: post?.title,
     body: post?.body,
   });
+  const [loading, setLoading] = useState(false);
 
   const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setBlogValues({ ...blogValues, [e.target.name]: e.target.value });
@@ -53,7 +54,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
       alert('deleted successfully');
       router.push('/');
     } catch (err) {
-      console.log(err);
+      alert(err);
     }
   };
 
@@ -63,17 +64,14 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
     try {
       const res = await axios.put(`/post/update/${post.id}`, blogValues);
       alert(res.data.message);
-      setEdit(false);
+      setEditPost(false);
       router.push(`/posts/${res.data.post.slug}`);
     } catch (err: any) {
-      alert(err?.response?.data?.message);
+      alert(err);
     }
   };
 
   //comments list
-  const { addCommentLocally, rootComments } = usePost();
-
-  const [loading, setLoading] = useState(false);
 
   const onCommentCreate = async (message: string) => {
     try {
@@ -176,7 +174,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
                     </li>,
                     <li
                       className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col cursor-pointer"
-                      onClick={() => setEdit(true)}
+                      onClick={() => setEditPost(true)}
                       key="2"
                     >
                       Edit Blog
@@ -185,45 +183,43 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
                 />
               )}
             </div>
-            {edit ? (
-              <>
-                <form onSubmit={onUpdate}>
-                  <textarea
-                    onChange={onChange}
-                    value={blogValues.title}
-                    name="title"
-                    placeholder="New post title here..."
-                    maxLength={250}
-                    className="w-full text-3xl px-4 py-2 outline-none font-bold resize-none h-[100px] md:h-[100px]"
-                    required
-                  />
-                  <hr />
-                  <textarea
-                    onChange={onChange}
-                    value={blogValues.body}
-                    name="body"
-                    placeholder="Write your post here...."
-                    className="w-full resize-none outline-none px-4 py-2 h-[400px]"
-                    maxLength={3000}
-                    required
-                  />
-                  <div className="buttons space-x-2">
-                    <button
-                      type="submit"
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    >
-                      Update
-                    </button>
-                    <button
-                      type="button"
-                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                      onClick={() => setEdit(false)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </>
+            {editPost ? (
+              <form onSubmit={onUpdate}>
+                <textarea
+                  onChange={onChange}
+                  value={blogValues.title}
+                  name="title"
+                  placeholder="New post title here..."
+                  maxLength={250}
+                  className="w-full text-3xl px-4 py-2 outline-none font-bold resize-none h-[100px] md:h-[100px]"
+                  required
+                />
+                <hr />
+                <textarea
+                  onChange={onChange}
+                  value={blogValues.body}
+                  name="body"
+                  placeholder="Write your post here...."
+                  className="w-full resize-none outline-none px-4 py-2 h-[400px]"
+                  maxLength={3000}
+                  required
+                />
+                <div className="buttons space-x-2">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Update
+                  </button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    onClick={() => setEditPost(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
             ) : (
               <>
                 <h2 className="title text-3xl font-bold">{blogValues.title}</h2>
@@ -238,6 +234,9 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
             {post && <Bookmark postId={post.id} />}
           </div>
           <div className="discussion px-4 space-y-6 pb-2">
+            <h2>
+              Discussion <span>({rootComments?.length ?? 0})</span>
+            </h2>
             {session && (
               <CommentForm
                 onSubmit={onCommentCreate}

@@ -12,18 +12,31 @@ export default async function handler(
       where: {
         id: Number(id),
       },
+      include: {
+        children: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
     if (!comment) return res.status(404).json({ message: 'Comment Not Found' });
 
-    const deletedComment = await prisma.comment.delete({
+    const ids: number[] = comment.children.map((comment) => {
+      return comment.id;
+    });
+
+    const deletedComments = await prisma.comment.deleteMany({
       where: {
-        id: Number(id),
+        id: {
+          in: [...ids, comment.id],
+        },
       },
     });
 
     return res.status(201).json({
-      bookmark: deletedComment,
+      comment: deletedComments,
       message: 'Comment Deleted Successfully',
     });
   } catch (err) {
