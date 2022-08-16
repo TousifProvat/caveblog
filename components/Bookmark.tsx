@@ -1,5 +1,6 @@
 import { useSession } from 'next-auth/react';
 import React, { FunctionComponent } from 'react';
+import toast from 'react-hot-toast';
 import useSWR from 'swr';
 import axios from '../lib/axios';
 
@@ -20,7 +21,7 @@ const Bookmark: FunctionComponent<PropTypes> = ({ postId }) => {
   const toggleBookmarkPost = async (postId: number) => {
     try {
       if (!session) {
-        return alert('Unauthorized Access');
+        return toast.error('Unauthorized Access');
       }
       if (data?.bookmarked) {
         //mutation -> decreases bookmark count & false bookmarked
@@ -52,9 +53,10 @@ const Bookmark: FunctionComponent<PropTypes> = ({ postId }) => {
         await axios.post('/bookmark/create', {
           postId,
         });
+        toast.success('Post bookmarked!');
       }
     } catch (err: any) {
-      alert(err.response.data.message);
+      toast.error('Something went wrong');
     }
   };
 

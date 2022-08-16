@@ -26,6 +26,7 @@ import formatDate from '../../utils/formatDate';
 import dynamic from 'next/dynamic';
 import CommentForm from '../../components/CommentForm';
 import { usePost } from '../../contexts/PostContext';
+import toast from 'react-hot-toast';
 
 interface PropTypes {
   post: postTypes;
@@ -48,26 +49,30 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   };
 
   // delete blog post
-  const deleteBlog = async () => {
+  const onDeleteBlog = async () => {
     try {
+      toast.loading('Deleting post...');
       await axios.delete(`/post/delete/${post.id}`);
-      alert('deleted successfully');
+      toast.dismiss();
+      toast.success('Post deleted');
       router.push('/');
     } catch (err) {
-      alert(err);
+      toast.error('Something went wrong');
     }
   };
 
   //update blog post
-  const onUpdate = async (e: SyntheticEvent) => {
+  const onUpdateBlog = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
+      toast.loading('Updating post...');
       const res = await axios.put(`/post/update/${post.id}`, blogValues);
-      alert(res.data.message);
+      toast.dismiss();
+      toast.success('Post updated');
       setEditPost(false);
       router.push(`/posts/${res.data.post.slug}`);
     } catch (err: any) {
-      alert(err);
+      toast.error('Something went wrong');
     }
   };
 
@@ -76,18 +81,20 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
   const onCommentCreate = async (message: string) => {
     try {
       setLoading(true);
+      toast.loading('Commenting...');
       const { data } = await axios.post('/comment/create', {
         message,
         post: post.id,
       });
+      toast.dismiss();
+      toast.success('Commented');
       const newComment = {
         ...data.comment,
         user: session?.user,
       };
-
       addCommentLocally(newComment);
     } catch (err) {
-      alert({ err });
+      toast.error('Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -166,7 +173,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
                   }
                   menus={[
                     <li
-                      onClick={deleteBlog}
+                      onClick={onDeleteBlog}
                       className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md flex flex-col cursor-pointer"
                       key="1"
                     >
@@ -184,7 +191,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
               )}
             </div>
             {editPost ? (
-              <form onSubmit={onUpdate}>
+              <form onSubmit={onUpdateBlog}>
                 <textarea
                   onChange={onChange}
                   value={blogValues.title}

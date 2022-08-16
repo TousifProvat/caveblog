@@ -1,10 +1,6 @@
 import Image from 'next/image';
-import React, {
-  FunctionComponent,
-  SyntheticEvent,
-  useRef,
-  useState,
-} from 'react';
+import React, { FunctionComponent, SyntheticEvent, useState } from 'react';
+import toast from 'react-hot-toast';
 import Spinner from './Spinner';
 
 interface PropTypes {
@@ -25,7 +21,7 @@ const CommentForm: FunctionComponent<PropTypes> = ({
   initValue = '',
 }) => {
   const [formFocus, setFormFocus] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>(initValue);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -56,12 +52,12 @@ const CommentForm: FunctionComponent<PropTypes> = ({
           className={`comment-box w-[90%] h-${
             formFocus ? '36' : '20'
           } border-[1px] rounded-md border-gray-300 outline-none focus:border-blue-500 px-2 py-1 placeholder:font-light resize-y min-h-[100px]`}
-          onFocus={() => {
+          onFocus={(e) => {
+            e.target.setSelectionRange(message.length, message.length);
             setFormFocus(true);
           }}
           onChange={(e) => setMessage(e.target.value)}
           value={message}
-          defaultValue={initValue}
           required
         ></textarea>
       </div>

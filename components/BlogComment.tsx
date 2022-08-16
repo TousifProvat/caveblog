@@ -2,6 +2,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { FunctionComponent, SyntheticEvent, useState } from 'react';
+import toast from 'react-hot-toast';
 import { usePost } from '../contexts/PostContext';
 import axios from '../lib/axios';
 import { commentTypes } from '../types';
@@ -15,27 +16,24 @@ interface PropTypes {
 }
 
 const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
+  const { data: session } = useSession(); // session state
   const {
     getReplies,
     addCommentLocally,
     deleteCommentLocally,
     updateCommentLocally,
   } = usePost();
+
   const childComments = getReplies(comment.id);
 
-  //hook
-  const { data: session } = useSession(); // session state
-
-  //states
   const [formShow, setFormShow] = useState<boolean>(false);
   const [formLoading, setFormLoading] = useState<boolean>(false);
   const [editComment, setEditComment] = useState<boolean>(false);
 
-  //funcs
-
   const onAddReply = async (message: string) => {
     try {
       setFormLoading(true);
+      toast.loading('Replying');
       const { data } = await axios.post('/comment/create', {
         message,
         post: comment.postId,
@@ -46,8 +44,10 @@ const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
         user: session?.user,
       };
       addCommentLocally(newReply);
+      toast.dismiss();
+      toast.success('Replied to the comment');
     } catch (err: any) {
-      alert(err);
+      toast.error('Something went wrong');
     } finally {
       setFormShow(false);
       setFormLoading(false);
@@ -57,10 +57,13 @@ const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
   const onCommentDelete = async (id: number) => {
     try {
       setFormLoading(true);
+      toast.loading('Deleting comment');
       await axios.delete(`/comment/delete/${id}`);
+      toast.dismiss();
       deleteCommentLocally(id);
+      toast.success('Comment deleted');
     } catch (err) {
-      alert(err);
+      toast.error('Something went wrong');
     } finally {
       setFormLoading(false);
     }
@@ -69,12 +72,15 @@ const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
   const onUpdateComment = async (message: string) => {
     try {
       setFormLoading(true);
+      toast.loading('Updating comment...');
       await axios.put(`/comment/update/${comment.id}`, {
         message,
       });
+      toast.dismiss();
+      toast.success('Comment updated');
       updateCommentLocally(message, comment.id);
     } catch (err) {
-      alert(err);
+      toast.error('Something went wrong');
     } finally {
       setFormLoading(false);
       setEditComment(false);
@@ -194,7 +200,6 @@ const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
           </div>
         </div>
       )}
-
       <div className="comment-container flex flex-col space-y-2 ml-[50px] sm:mr-[5px]">
         {formShow && (
           <CommentForm

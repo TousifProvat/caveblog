@@ -3,6 +3,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { ChangeEventHandler, SyntheticEvent, useState } from 'react';
 import { useRouter } from 'next/router';
 import { NextPage } from 'next';
+import toast from 'react-hot-toast';
 
 const Login: NextPage = () => {
   const [formValues, setFormValues] = useState({ email: '', password: '' });
@@ -24,6 +25,7 @@ const Login: NextPage = () => {
       ...formValues,
       redirect: false,
     });
+    toast.success('You are logged in');
   }
 
   return (

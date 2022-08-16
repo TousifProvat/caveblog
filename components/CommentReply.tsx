@@ -2,6 +2,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { usePost } from '../contexts/PostContext';
 import axios from '../lib/axios';
 import { commentTypes } from '../types';
@@ -22,10 +23,13 @@ const CommentReply = ({ reply }: PropTypes) => {
   const onReplyDelete = async (id: number) => {
     try {
       setFormLoading(true);
+      toast.loading('Deleting reply...');
       await axios.delete(`/comment/delete/${id}`);
+      toast.dismiss();
+      toast.success('Reply deleted');
       deleteCommentLocally(id);
     } catch (err) {
-      alert(err);
+      toast.error('Something went wrong');
     } finally {
       setFormLoading(false);
     }
@@ -113,7 +117,7 @@ const CommentReply = ({ reply }: PropTypes) => {
                       className="cursor-pointer hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md"
                       onClick={() => onReplyDelete(reply.id)}
                     >
-                      Delete Comment
+                      Delete Reply
                     </li>,
                     <li
                       key="2"

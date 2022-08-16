@@ -1,5 +1,6 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 
 const withAuth = (Component: any) => {
   const Auth = (props: any) => {
@@ -7,6 +8,7 @@ const withAuth = (Component: any) => {
     const { data: session, status } = useSession({
       required: true,
       onUnauthenticated: () => {
+        toast.error('You must login first');
         router.push('/login');
       },
     });

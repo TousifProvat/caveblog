@@ -1,5 +1,6 @@
 import { useSession } from 'next-auth/react';
 import React, { FunctionComponent } from 'react';
+import toast from 'react-hot-toast';
 import useSWR from 'swr';
 import axios from '../lib/axios';
 
@@ -20,7 +21,7 @@ const Star: FunctionComponent<PropTypes> = ({ postId }) => {
   const toggleStarPost = async (postId: number) => {
     try {
       if (!session) {
-        return alert('Unauthorized Access');
+        return toast.error('Unauthorized Access');
       }
       if (data?.starred) {
         //mutation -> decreases star count & false starred
@@ -52,9 +53,10 @@ const Star: FunctionComponent<PropTypes> = ({ postId }) => {
         await axios.post('/star/create', {
           postId,
         });
+        toast.success('Post starred!');
       }
     } catch (err: any) {
-      alert(err.response.data.message);
+      toast.error('Something went wrong');
     }
   };
 
