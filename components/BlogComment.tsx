@@ -33,8 +33,7 @@ const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
 
   //funcs
 
-  // function to create comment reply
-  const onReply = async (message: string) => {
+  const onAddReply = async (message: string) => {
     try {
       setFormLoading(true);
       const { data } = await axios.post('/comment/create', {
@@ -55,11 +54,10 @@ const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
     }
   };
 
-  //function to detete comment
   const onCommentDelete = async (id: number) => {
     try {
       setFormLoading(true);
-      await axios.delete(`/comment/delete/${comment.id}`);
+      await axios.delete(`/comment/delete/${id}`);
       deleteCommentLocally(id);
     } catch (err) {
       alert(err);
@@ -68,7 +66,6 @@ const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
     }
   };
 
-  //edit comment
   const onUpdateComment = async (message: string) => {
     try {
       setFormLoading(true);
@@ -201,7 +198,7 @@ const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
       <div className="comment-container flex flex-col space-y-2 ml-[50px] mr-[5px]">
         {formShow && (
           <CommentForm
-            onSubmit={onReply}
+            onSubmit={onAddReply}
             session={session}
             loading={formLoading}
           />

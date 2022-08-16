@@ -26,10 +26,10 @@ const CommentForm: FunctionComponent<PropTypes> = ({
 }) => {
   const [formFocus, setFormFocus] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
-  const textRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    if (message === '') return alert('Comment cannot be empty');
     onSubmit(message).then(() => type !== 'update' && setMessage(''));
   };
 
@@ -51,7 +51,6 @@ const CommentForm: FunctionComponent<PropTypes> = ({
           )}
         </div>
         <textarea
-          ref={textRef}
           autoFocus={autoFocus}
           placeholder="Add Comment..."
           className={`comment-box w-[90%] h-${
