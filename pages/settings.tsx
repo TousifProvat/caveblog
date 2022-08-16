@@ -1,6 +1,8 @@
 import { GetServerSideProps, NextPage } from 'next';
 import { getSession } from 'next-auth/react';
 import React, { ChangeEventHandler, SyntheticEvent, useState } from 'react';
+import toast from 'react-hot-toast';
+import Spinner from '../components/Spinner';
 import axios from '../lib/axios';
 import withAuth from '../lib/withAuth';
 
@@ -23,13 +25,13 @@ const Settings: NextPage<PropTypes> = ({ user }) => {
     email: user.email || '',
     username: user.username || '',
   });
-
   const [profileValues, setProfileValues] = useState<profileTypes>({
     headline: user.profile?.headline || '',
     bio: user.profile?.bio || '',
     website: user.profile?.website || '',
     location: user.profile?.location || '',
   });
+  const [loading, setLoading] = useState(false);
 
   const onChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
@@ -44,13 +46,18 @@ const Settings: NextPage<PropTypes> = ({ user }) => {
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
+      setLoading(true);
+      toast.loading('Updating settings...');
       const res = await axios.put(`/user/update/${user.id}`, {
         userValues: formValues,
         profileValues,
       });
-      alert(res.data.message);
+      toast.dismiss();
+      toast.success('Settings updated');
     } catch (err: any) {
-      alert(err?.response?.data.message);
+      toast.error('Something went wrong');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -161,8 +168,11 @@ const Settings: NextPage<PropTypes> = ({ user }) => {
             />
           </div>
           <div className="text-center">
-            <button className="bg-blue-500 w-full py-2 rounded-md text-white hover:bg-blue-600">
-              Update Information
+            <button
+              className="bg-blue-500 w-full py-2 rounded-md text-white hover:bg-blue-600"
+              disabled={loading}
+            >
+              {loading ? <Spinner size={7} /> : ' Update Information'}
             </button>
           </div>
         </form>

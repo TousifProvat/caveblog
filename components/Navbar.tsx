@@ -2,11 +2,23 @@ import { signOut, useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 const DropDown = dynamic(() => import('./DropDown'));
 const Spinner = dynamic(() => import('./Spinner'));
 
 const Navbar = () => {
   const { data: session, status } = useSession();
+
+  const onSignOut = async () => {
+    try {
+      toast.loading('Signing out...');
+      await signOut();
+      toast.dismiss();
+      toast.success('Signed out');
+    } catch (err) {
+      toast.error('Something went wrong');
+    }
+  };
 
   return (
     <div className="w-full h-16 flex items-center justify-center bg-white shadow-sm fixed z-20 ">
@@ -73,7 +85,7 @@ const Navbar = () => {
                 <hr key="5" />,
                 <li
                   className="hover:bg-blue-400 hover:text-white py-2 px-2 rounded-md cursor-pointer"
-                  onClick={() => signOut()}
+                  onClick={onSignOut}
                   key="6"
                 >
                   Signout

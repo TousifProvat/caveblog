@@ -2,6 +2,8 @@ import { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ChangeEventHandler, SyntheticEvent, useState } from 'react';
+import toast from 'react-hot-toast';
+import Spinner from '../components/Spinner';
 import axios from '../lib/axios';
 import withAuth from '../lib/withAuth';
 
@@ -11,6 +13,7 @@ const NewBlog: NextPage = () => {
     title: '',
     body: '',
   });
+  const [loading, setLoading] = useState(false);
 
   //hooks
   const router = useRouter();
@@ -23,15 +26,20 @@ const NewBlog: NextPage = () => {
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/post/create', blogValues);
-      alert(res.data.message);
+      toast.loading('Creating post...');
+      setLoading(true);
+      await axios.post('/post/create', blogValues);
+      toast.dismiss();
+      toast.success('Post created');
       setBlogValues({
         title: '',
         body: '',
       });
       router.push('/');
     } catch (err: any) {
-      alert(err?.response?.data?.message);
+      toast.error('Something went wrong');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -82,8 +90,11 @@ const NewBlog: NextPage = () => {
             />
           </div>
           <div className="footer w-full fixed md:relative bottom-0 left-0 px-2 py-2 bg-gray-100 border-t-[1px] border-t-gray-200">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              Publish
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              disabled={loading}
+            >
+              {loading ? <Spinner size={5} /> : 'Publish'}
             </button>
           </div>
         </form>
