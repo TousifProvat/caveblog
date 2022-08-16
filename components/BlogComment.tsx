@@ -195,7 +195,7 @@ const BlogComment: FunctionComponent<PropTypes> = ({ comment }) => {
         </div>
       )}
 
-      <div className="comment-container flex flex-col space-y-2 ml-[50px] mr-[5px]">
+      <div className="comment-container flex flex-col space-y-2 ml-[50px] sm:mr-[5px]">
         {formShow && (
           <CommentForm
             onSubmit={onAddReply}
