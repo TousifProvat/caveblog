@@ -8,7 +8,6 @@ const Spinner = dynamic(() => import('./Spinner'));
 
 const Navbar = () => {
   const { data: session, status } = useSession();
-
   const onSignOut = async () => {
     try {
       toast.loading('Signing out...');

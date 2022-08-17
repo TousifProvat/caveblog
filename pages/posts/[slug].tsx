@@ -236,11 +236,11 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
               </>
             )}
           </div>
-          <div className="w-full interaction-section-small space-x-5 flex items-center justify-center pt-5 sm:pb-10 sm:hidden">
+          <div className="w-full interaction-section-small space-x-5 flex items-center justify-center py-5 pb sm:hidden">
             {post && <Star postId={post.id} />}
             {post && <Bookmark postId={post.id} />}
           </div>
-          <div className="discussion px-4 space-y-6 pb-2">
+          <div className="discussion pt-4 space-y-6 pb-[7rem] sm:pb-[4rem] w-[95%] mx-auto">
             <h2>
               Discussion <span>({rootComments?.length ?? 0})</span>
             </h2>

@@ -73,6 +73,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
       stars: true,
       bookmarks: true,
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
   });
 
   return {

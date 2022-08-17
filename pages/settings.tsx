@@ -43,15 +43,22 @@ const Settings: NextPage<PropTypes> = ({ user }) => {
     setProfileValues({ ...profileValues, [e.target.name]: e.target.value });
   };
 
+  //hack to reload session
+  const reloadSession = () => {
+    const event = new Event('visibilitychange'); // creates new event
+    document.dispatchEvent(event); // calls the invent
+  };
+
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
       setLoading(true);
       toast.loading('Updating settings...');
-      const res = await axios.put(`/user/update/${user.id}`, {
+      await axios.put(`/user/update/${user.id}`, {
         userValues: formValues,
         profileValues,
       });
+      reloadSession();
       toast.dismiss();
       toast.success('Settings updated');
     } catch (err: any) {
