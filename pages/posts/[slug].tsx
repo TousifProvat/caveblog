@@ -27,6 +27,7 @@ import dynamic from 'next/dynamic';
 import CommentForm from '../../components/CommentForm';
 import { usePost } from '../../contexts/PostContext';
 import toast from 'react-hot-toast';
+import Spinner from '../../components/Spinner';
 
 interface PropTypes {
   post: postTypes;
@@ -66,6 +67,7 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
     e.preventDefault();
     try {
       toast.loading('Updating post...');
+      setLoading(true);
       const res = await axios.put(`/post/update/${post.id}`, blogValues);
       toast.dismiss();
       toast.success('Post updated');
@@ -73,11 +75,12 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
       router.push(`/posts/${res.data.post.slug}`);
     } catch (err: any) {
       toast.error('Something went wrong');
+    } finally {
+      setLoading(false);
     }
   };
 
   //comments list
-
   const onCommentCreate = async (message: string) => {
     try {
       setLoading(true);
@@ -211,12 +214,13 @@ const Slug: NextPage<PropTypes> = ({ post }) => {
                   maxLength={3000}
                   required
                 />
-                <div className="buttons space-x-2">
+                <div className="buttons space-x-2 flex item-center">
                   <button
                     type="submit"
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    disabled={loading}
                   >
-                    Update
+                    {loading ? <Spinner size={6} /> : 'Update'}
                   </button>
                   <button
                     type="button"

@@ -1,6 +1,12 @@
 import Image from 'next/image';
-import React, { FunctionComponent, SyntheticEvent, useState } from 'react';
+import React, {
+  FunctionComponent,
+  SyntheticEvent,
+  useRef,
+  useState,
+} from 'react';
 import toast from 'react-hot-toast';
+import useOutsideClick from '../hooks/useOutsideClick';
 import Spinner from './Spinner';
 
 interface PropTypes {
@@ -20,6 +26,9 @@ const CommentForm: FunctionComponent<PropTypes> = ({
   type,
   initValue = '',
 }) => {
+  const ref = useRef<any>(null);
+  useOutsideClick(ref, () => setFormFocus(false));
+
   const [formFocus, setFormFocus] = useState<boolean>(false);
   const [message, setMessage] = useState<string>(initValue);
 
@@ -33,6 +42,7 @@ const CommentForm: FunctionComponent<PropTypes> = ({
     <form
       className="add-comment-section flex flex-col space-y-2"
       onSubmit={handleSubmit}
+      ref={ref}
     >
       <div className="comment-box flex space-x-2">
         <div className="profile-avatar w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
