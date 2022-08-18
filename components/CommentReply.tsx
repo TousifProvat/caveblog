@@ -38,12 +38,15 @@ const CommentReply = ({ reply }: PropTypes) => {
   const onUpdateReply = async (message: string) => {
     try {
       setFormLoading(true);
+      toast.loading('Deleting reply...');
       await axios.put(`/comment/update/${reply!.id}`, {
         message,
       });
+      toast.dismiss();
+      toast.success('Reply deleted');
       updateCommentLocally(message, reply!.id);
     } catch (err) {
-      alert(err);
+      toast.error('Something went wrong');
     } finally {
       setFormLoading(false);
       setEditReply(false);
