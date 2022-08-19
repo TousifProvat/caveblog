@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 const Login: NextPage = () => {
   const [formValues, setFormValues] = useState({ email: '', password: '' });
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
 
   if (session) {
@@ -38,12 +38,30 @@ const Login: NextPage = () => {
                 Signin to your cave
               </h2>
             </div>
-            <div className="social-login my-2 text-center flex flex-col">
+            <div className="social-login my-2 text-center flex flex-col space-y-2">
               <button
                 className="bg-blue-500 w-full py-3 rounded-md"
                 onClick={() => signIn('google')}
               >
                 <h2 className="text-white">Continue with Google</h2>
+              </button>
+              <button
+                className="bg-[#7289da] w-full py-3 rounded-md"
+                onClick={() => signIn('discord')}
+              >
+                <h2 className="text-white">Continue with Discord</h2>
+              </button>
+              <button
+                className="bg-[#29487d] w-full py-3 rounded-md"
+                onClick={() => signIn('facebook')}
+              >
+                <h2 className="text-white">Continue with Facebook</h2>
+              </button>
+              <button
+                className="bg-[#333333] w-full py-3 rounded-md"
+                onClick={() => signIn('github')}
+              >
+                <h2 className="text-white">Continue with Github</h2>
               </button>
             </div>
             <div className="my-3 text-center flex items-center  justify-between before:w-[40%] before:h-[0.6px] before:bg-slate-300 before:content-[' '] after:w-[40%] after:h-[0.6px] after:bg-slate-300 after:content-[''] text-slate-300">
