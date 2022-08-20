@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/react';
-import { ChangeEventHandler, SyntheticEvent, useState } from 'react';
+// import { ChangeEventHandler, SyntheticEvent, useState } from 'react';
 import { useRouter } from 'next/router';
 import { NextPage } from 'next';
-import toast from 'react-hot-toast';
+// import toast from 'react-hot-toast';
 
 const Login: NextPage = () => {
-  const [formValues, setFormValues] = useState({ email: '', password: '' });
+  // const [formValues, setFormValues] = useState({ email: '', password: '' });
 
   const { data: session } = useSession();
   const router = useRouter();
@@ -15,18 +15,18 @@ const Login: NextPage = () => {
     router.push('/');
   }
 
-  const onChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    setFormValues({ ...formValues, [e.target.name]: e.target.value });
-  };
+  // const onChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+  //   setFormValues({ ...formValues, [e.target.name]: e.target.value });
+  // };
 
-  async function onSubmit(e: SyntheticEvent) {
-    e.preventDefault();
-    await signIn('credentials', {
-      ...formValues,
-      redirect: false,
-    });
-    toast.success('You are logged in');
-  }
+  // async function onSubmit(e: SyntheticEvent) {
+  //   e.preventDefault();
+  //   await signIn('credentials', {
+  //     ...formValues,
+  //     redirect: false,
+  //   });
+  //   toast.success('You are logged in');
+  // }
 
   return (
     <div className="h-fit flex items-center justify-center pt-16 py-12 px-4  sm:px-6 lg:px-8">
@@ -67,7 +67,7 @@ const Login: NextPage = () => {
             <div className="my-3 text-center flex items-center  justify-between before:w-[40%] before:h-[0.6px] before:bg-slate-300 before:content-[' '] after:w-[40%] after:h-[0.6px] after:bg-slate-300 after:content-[''] text-slate-300">
               or
             </div>
-            <form className="flex flex-col mb-3 space-y-2" onSubmit={onSubmit}>
+            {/* <form className="flex flex-col mb-3 space-y-2" onSubmit={onSubmit}>
               <div>
                 <input
                   type="email"
@@ -107,7 +107,7 @@ const Login: NextPage = () => {
                   Forget Password?
                 </a>
               </Link>
-            </div>
+            </div> */}
             <div className="text-center">
               <span className="text-s text-slate-500">Not a member yet?</span>
               <Link href={'/register'} as={'/register'}>
