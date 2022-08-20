@@ -4,7 +4,7 @@
 
 Cave is an amazing platform for writing blogs from your cave.
 
-Live: [Cave.Blog]('https://cave-gules.vercel.app')
+Live: [Cave.Blog](https://cave-gules.vercel.app)
 
 ## Tech used
 
