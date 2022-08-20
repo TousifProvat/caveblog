@@ -1,10 +1,10 @@
 # Cave Blog
-![cave-blog](https://res.cloudinary.com/dklakm8v6/image/upload/v1661017936/github%20images/cave_blog_next_js_hhay3d.png)
 
+![cave-blog](https://res.cloudinary.com/dklakm8v6/image/upload/v1661017936/github%20images/cave_blog_next_js_hhay3d.png)
 
 Cave is an amazing platform for writing blogs from your cave.
 
-Live: [Cave.Blog]('https://cave-gules.vercel.app/')
+Live: [Cave.Blog]('https://cave-gules.vercel.app')
 
 ## Tech used
 
@@ -72,5 +72,3 @@ npm run dev
 
 - Add NextAuth Credentials login
 - Add Backend Caching
-
-
