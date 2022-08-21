@@ -72,3 +72,6 @@ npm run dev
 
 - Add NextAuth Credentials login
 - Add Backend Caching
+- Search Funtionality
+- Filter post by Tags
+- Follow Authors
