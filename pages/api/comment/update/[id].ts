@@ -31,7 +31,6 @@ export default async function handler(
       message: 'Comment Updated Successfully',
     });
   } catch (err) {
-    console.log({ err });
-    return res.status(500).json({ message: 'Something went wrong!' });
+    return res.status(500).json({ message: 'Seomthing went wrong!' });
   }
 }
